@@ -1,0 +1,108 @@
+@layout.app({ title: 'Criar Conta' })
+
+  @slot('main')
+    <h1 class="text-2xl font-bold mb-6">
+      Criar Nova Conta
+    </h1>
+
+    @if(flashMessages.has('errors'))
+      <div
+        class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
+        role="alert"
+      >
+        <strong class="font-bold">Erro!</strong>
+        <ul>
+          @each(error in flashMessages.get('errors'))
+            <li>
+              {{ error.message }}
+            </li>
+          @end
+        </ul>
+      </div>
+    @endif
+    
+    @form({ action: route('register.store'), method: 'POST' })
+      <div class="space-y-6">
+
+        <div>
+          <label for="full_name" class="block text-sm/6 font-medium text-gray-900">Nome Completo</label>
+          <div class="mt-2">
+            @!input({
+            type: 'text',
+            name: 'fullName',
+            id: 'full_name',
+            placeholder: 'Seu nome completo...',
+            value: flashMessages.get('fullName') || ''
+            })
+            @if(flashMessages.has(`errors.fullName`))
+              <p class="text-red-500 text-xs mt-1">
+                {{ flashMessages.get(`errors.fullName`)[0].message }}
+              </p>
+            @endif
+          </div>
+        </div>
+
+        <div>
+          <label for="email" class="block text-sm/6 font-medium text-gray-900">Email</label>
+          <div class="mt-2">
+            @!input({
+            type: 'email',
+            name: 'email',
+            id: 'email',
+            placeholder: 'seu@email.com',
+            value: flashMessages.get('email') || ''
+            })
+            @if(flashMessages.has(`errors.email`))
+              <p class="text-red-500 text-xs mt-1">
+                {{ flashMessages.get(`errors.email`)[0].message }}
+              </p>
+            @endif
+          </div>
+        </div>
+
+        <div>
+          <label for="password" class="block text-sm/6 font-medium text-gray-900">Senha</label>
+          <div class="mt-2">
+            @!input({
+            type: 'password',
+            name: 'password',
+            id: 'password',
+            placeholder: '********'
+            })
+            @if(flashMessages.has(`errors.password`))
+              <p class="text-red-500 text-xs mt-1">
+                {{ flashMessages.get(`errors.password`)[0].message }}
+              </p>
+            @endif
+          </div>
+        </div>
+
+        <div>
+          <label for="password_confirmation" class="block text-sm/6 font-medium text-gray-900">Confirmar Senha</label>
+          <div class="mt-2">
+            @!input({
+            type: 'password',
+            name: 'password_confirmation',
+            id: 'password_confirmation',
+            placeholder: '********'
+            })
+            @if(flashMessages.has(`errors.password_confirmation`))
+              <p class="text-red-500 text-xs mt-1">
+                {{ flashMessages.get(`errors.password_confirmation`)[0].message }}
+              </p>
+            @endif
+          </div>
+        </div>
+
+      </div>
+
+      <div class="mt-6 flex items-center justify-end gap-x-6">
+        <button type="submit" class="btn">
+          Cadastrar
+      </button>
+      </div>
+    @end
+    
+  @end
+  
+@end
