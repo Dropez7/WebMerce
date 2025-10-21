@@ -1,29 +1,23 @@
-/*
-|--------------------------------------------------------------------------
-| HTTP kernel file
-|--------------------------------------------------------------------------
-*/
-
 import router from '@adonisjs/core/services/router'
 import server from '@adonisjs/core/services/server'
 
 server.errorHandler(() => import('#exceptions/handler'))
 
 /**
- * Middlewares globais (rodam sempre)
+ * Global middlewares (run always)
  */
 server.use([
   () => import('#middleware/container_bindings_middleware'),
   () => import('@adonisjs/static/static_middleware'),
   () => import('@adonisjs/vite/vite_middleware'),
 
-  // ⚙️ Sessão e autenticação precisam vir AQUI (no server)
+  // Session and auth need to be here (in server.use)
   () => import('@adonisjs/session/session_middleware'),
   () => import('@adonisjs/auth/initialize_auth_middleware'),
 ])
 
 /**
- * Middlewares que rodam apenas quando há rota correspondente
+ * Middlewares that run only when there's a matching route
  */
 router.use([
   () => import('@adonisjs/core/bodyparser_middleware'),
@@ -31,7 +25,7 @@ router.use([
 ])
 
 /**
- * Middlewares nomeados (usados manualmente nas rotas)
+ * Named middlewares (used manually on routes)
  */
 export const middleware = router.named({
   guest: () => import('#middleware/guest_middleware'),
