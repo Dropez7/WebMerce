@@ -44,6 +44,9 @@ export default class User extends compose(BaseModel, AuthFinder) {
   @column()
   declare phone: string | null
 
+  @column()
+  declare avatarFilename: string | null
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 

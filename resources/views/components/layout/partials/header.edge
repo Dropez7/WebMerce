@@ -1,34 +1,55 @@
 {{-- resources/views/components/layout/partials/header.edge --}}
-<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4">
-  <div class="flex justify-start">
+
+<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+  <div class="flex items-center">
 
     <a href="{{ route('home') }}" class="text-lg font-semibold text-gray-900">
       WebCommerce
     </a>
 
   </div>
-  <div class="flex justify-end">
+
+  <div class="flex items-center">
     @if(auth.user)
       <div class="flex items-center space-x-3">
-        {{-- Adicionar link para editar perfil --}}
+
         <a
           href="{{ route('profile.edit') }}"
-          class="text-sm font-medium text-gray-700 hover:text-gray-900 mr-3"
+          class="inline-flex items-center space-x-2 text-sm font-medium text-gray-700 hover:text-gray-900"
         >
-          Meu Perfil
-        </a>
-        {{-- Fim do link --}}
+          @if(auth.user.avatarFilename)
         <img
-          class="size-8 shrink-0 object-cover rounded-full"
+          class="w-8 h-8 rounded-full object-cover"
           alt="{{ auth.user.fullName }}"
-          src="https://via.placeholder.com/32"
+          src="{{ route('avatars.show', { filename: auth.user.avatarFilename }) }}"
         />
-        <span class="text-sm font-medium text-gray-700">
-          {{ auth.user.fullName }}
-        </span>
-        @form({ action: route('logout'), method: 'POST' })
+          @else
+        <div class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-gray-500">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="w-5 h-5"
+          >
+            <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A1.75 1.75 0 0 1 18.24 21.75H5.76c-.502 0-.965-.188-1.314-.515a1.75 1.75 0 0 1-.945-1.117Z"
+            />
+          </svg>
+        </div>
+          @endif
+
+          <span class="text-sm font-medium text-gray-700">
+        {{ auth.user.fullName }}
+          </span>
+        </a>
+
+        @form({ action: route('logout'), method: 'POST', class: 'inline' })
           <button type="submit" class="text-red-600 text-sm font-medium hover:underline">
-            Sair
+        Sair
           </button>
         @end
       </div>

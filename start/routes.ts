@@ -52,3 +52,5 @@ router
     router.put('/profile', [ProfileController, 'update']).as('profile.update') // Usar PUT para atualização
   })
   .use(middleware.auth())
+
+router.get('/avatars/:filename', [ImagesController, 'showAvatar']).as('avatars.show') // <--- Verifique esta linha

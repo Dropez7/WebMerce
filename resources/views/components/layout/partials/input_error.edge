@@ -1,0 +1,4 @@
+{{-- resources/views/components/partials/input_error.edge --}}
+@if(flashMessages.has(`errors.${field}`))
+  <p class="text-red-500 text-xs mt-1">{{ flashMessages.get(`errors.${field}`)[0].message }}</p>
+@endif
