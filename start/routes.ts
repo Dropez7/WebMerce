@@ -12,13 +12,16 @@ import { middleware } from '#start/kernel'
 
 const ProductsController = () => import('#controllers/products_controller')
 const ImagesController = () => import('#controllers/images_controller')
+const ProfileController = () => import('#controllers/profiles_controller')
 const AuthController = () => import('#controllers/auth_controller')
 
 // Rota de GET
-router.get('/', async ({ view, auth }) => {
-  await auth.check()
-  return view.render('pages/home', { auth, title: 'Home' })
-})
+router
+  .get('/', async ({ view, auth }) => {
+    await auth.check()
+    return view.render('pages/home', { auth, title: 'Home' })
+  })
+  .as('home')
 
 // Rotas de Produtos
 router.resource('/products', ProductsController).as('products')
@@ -42,3 +45,10 @@ router
 // Rotas de Login
 router.get('/login', [AuthController, 'showLogin']).as('login.show').use(middleware.guest())
 router.post('/login', [AuthController, 'storeLogin']).as('login.store').use(middleware.guest())
+
+router
+  .group(() => {
+    router.get('/profile', [ProfileController, 'edit']).as('profile.edit')
+    router.put('/profile', [ProfileController, 'update']).as('profile.update') // Usar PUT para atualização
+  })
+  .use(middleware.auth())
