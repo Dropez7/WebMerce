@@ -1,0 +1,85 @@
+@layout.app({ title: 'Entrar' })
+
+  @slot('main')
+    <h1 class="text-2xl font-bold mb-6">
+      Entrar na sua Conta
+    </h1>
+
+    @if(flashMessages.has('error'))
+      <div
+        class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
+        role="alert"
+      >
+        <strong class="font-bold">Erro!</strong>
+        <span class="block sm:inline">{{ flashMessages.get('error') }}</span>
+      </div>
+    @elseif(flashMessages.has('success'))
+      <div
+        class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4"
+        role="alert"
+      >
+        <strong class="font-bold">Sucesso!</strong>
+        <span class="block sm:inline">{{ flashMessages.get('success') }}</span>
+      </div>
+    @endif
+
+    @form({ action: route('login.store'), method: 'POST' })
+      <div class="space-y-6">
+
+        <div>
+          <label for="email" class="block text-sm/6 font-medium text-gray-900">Email</label>
+          <div class="mt-2">
+            @!input({
+              type: 'email',
+              name: 'email',
+              id: 'email',
+              placeholder: 'seu@email.com',
+              value: flashMessages.get('email') || '',
+              required: true
+            })
+            @if(flashMessages.has(`errors.email`))
+              <p class="text-red-500 text-xs mt-1">
+                {{ flashMessages.get(`errors.email`)[0].message }}
+              </p>
+            @endif
+          </div>
+        </div>
+
+        <div>
+          <label for="password" class="block text-sm/6 font-medium text-gray-900">Senha</label>
+          <div class="mt-2">
+            @!input({
+              type: 'password',
+              name: 'password',
+              id: 'password',
+              placeholder: '********',
+              required: true
+            })
+            @if(flashMessages.has(`errors.password`))
+              <p class="text-red-500 text-xs mt-1">
+                {{ flashMessages.get(`errors.password`)[0].message }}
+              </p>
+            @endif
+          </div>
+        </div>
+
+      </div>
+
+      <div class="mt-6 flex items-center justify-end gap-x-6">
+        <button type="submit" class="btn">
+          Entrar
+        </button>
+      </div>
+    @end
+
+    <p class="mt-4 text-center text-sm text-gray-500">
+      Não tem uma conta?
+      <a
+        href="{{ route('register.create') }}"
+        class="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
+      >
+        Crie uma agora
+      </a>
+    </p>
+  @end
+@end
