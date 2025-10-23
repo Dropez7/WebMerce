@@ -1,0 +1,60 @@
+{
+  "rules": {
+    "required": "O campo {{ field }} é obrigatório, seu doido!",
+    "email": "Isso aí no campo {{ field }} não parece um email válido.",
+    "minLength": "O campo {{ field }} precisa de pelo menos {{ options.min }} caracteres.",
+    "confirmed": "O campo {{ field }} não bate com a confirmação.",
+    "unique": "Este {{ field }} já está a ser usado.",
+    "positive": "O campo {{ field }} tem que ser um número positivo.",
+    "file.size": "Ficheiro muito grande! Máximo de {{ options.size }}.",
+    "file.extname": "Só aceitamos ficheiros {{ options.extnames }}.",
+    "regex": "O formato do campo {{ field }} está inválido."
+  },
+  "fields": {
+    "fullName": {
+      "required": "Ei, qual é o seu nome de palco? Não deixe em branco!",
+      "minLength": "O nome tem de ter pelo menos {{ options.min }} caracteres, mestre."
+    },
+    "email": {
+      "required": "Precisamos do seu email para enviar os bilhetes do backstage!",
+      "email": "Isso não parece um email válido, meu chapa."
+    },
+    "password": {
+      "required": "Sem senha, sem entrada!",
+      "minLength": "A senha precisa de pelo menos {{ options.min }} caracteres! Mais atitude!",
+      "confirmed": "As senhas não batem. Tente de novo."
+    },
+    "name": {
+      "required": "Qual o nome desta pedrada?",
+      "minLength": "Nome curto demais, precisa de pelo menos {{ options.min }} letras."
+    },
+    "price": {
+      "required": "Quanto vale o show? Diga o preço!",
+      "positive": "Preço inválido, tem que ser maior que zero."
+    },
+    "description": {
+      "required": "Conta a história desse produto!",
+      "minLength": "Descrição muito básica (mínimo {{ options.min }} caracteres)."
+    },
+    "image": {
+      "required": "Cadê a foto da capa do álbum? Envie uma imagem!",
+      "size": "Imagem muito pesada! Máximo permitido: {{ options.size }}.",
+      "extnames": "Formato de imagem não suportado. Use um destes: {{ options.extnames }}."
+    },
+    "age": {
+      "number": "Idade tem que ser um número.",
+      "positive": "Idade inválida."
+    },
+    "postalCode": {
+      "regex": "Formato de CEP inválido (use 00000-000 ou 00000000)."
+    },
+    "gender": {
+      "enum": "Gênero selecionado não é válido."
+    },
+    "phone": {},
+    "avatar": {
+      "size": "Avatar muito pesado! Máximo permitido: {{ options.size }}.",
+      "extnames": "Formato de imagem não suportado para avatar. Use um destes: {{ options.extnames }}."
+    }
+  }
+}

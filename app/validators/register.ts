@@ -1,8 +1,5 @@
 import vine from '@vinejs/vine'
 
-/**
- * Validates the user registration request
- */
 export const registerValidator = vine.compile(
   vine.object({
     fullName: vine.string().trim().minLength(3),

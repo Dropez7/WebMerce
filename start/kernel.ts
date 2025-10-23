@@ -23,6 +23,7 @@ server.use([
 router.use([
   () => import('@adonisjs/core/bodyparser_middleware'),
   () => import('@adonisjs/shield/shield_middleware'),
+  () => import('#middleware/detect_user_locale_middleware'),
 ])
 
 /**
