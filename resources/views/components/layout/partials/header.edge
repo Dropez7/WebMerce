@@ -1,73 +1,84 @@
-{{-- resources/views/components/layout/partials/header.edge --}}
+<div class="bg-gray-950 border-b border-gray-700">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+    <div class="flex items-center">
+      <a
+        href="{{ route('home') }}"
+        class="text-lg font-semibold text-white hover:text-red-500 transition-colors"
+      >
+        ROCK N' ROLL
+      </a>
+    </div>
 
-<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-  <div class="flex items-center">
-
-    <a href="{{ route('home') }}" class="text-lg font-semibold text-gray-900">
-      WebCommerce
-    </a>
-
-  </div>
-
-  <div class="flex items-center">
-    @if(auth.user)
-      <div class="flex items-center space-x-3">
-
-        <a
-          href="{{ route('profile.edit') }}"
-          class="inline-flex items-center space-x-2 text-sm font-medium text-gray-700 hover:text-gray-900"
-        >
-          @if(auth.user.avatarFilename)
-        <img
-          class="w-8 h-8 rounded-full object-cover"
-          alt="{{ auth.user.fullName }}"
-          src="{{ route('avatars.show', { filename: auth.user.avatarFilename }) }}"
-        />
-          @else
-        <div class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-gray-500">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.5"
-            stroke="currentColor"
-            class="w-5 h-5"
+    <div class="flex items-center">
+      @if(auth.user)
+        <div class="flex items-center space-x-4">
+          <a
+            href="{{ route('profile.edit') }}"
+            class="flex items-center space-x-2 text-sm font-medium text-gray-300 hover:text-red-500 transition-colors"
           >
-            <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A1.75 1.75 0 0 1 18.24 21.75H5.76c-.502 0-.965-.188-1.314-.515a1.75 1.75 0 0 1-.945-1.117Z"
-            />
-          </svg>
+            @if(auth.user.avatarFilename)
+              <img
+                class="w-8 h-8 rounded-full object-cover border-2 border-gray-600"
+                alt="{{ auth.user.fullName }}"
+                src="{{ route('avatars.show', { filename: auth.user.avatarFilename }) }}"
+              />
+            @else
+              {{-- Placeholder --}}
+              <div
+                class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center text-gray-400 border-2 border-gray-600"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="w-5 h-5"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A1.75 1.75 0 0 1 18.24 21.75H5.76c-.502 0-.965-.188-1.314-.515a1.75 1.75 0 0 1-.945-1.117Z"
+                  />
+                </svg>
+              </div>
+            @endif
+          </a>
+
+          <a
+            href="{{ route('products.index') }}"
+            class="flex items-center space-x-2 text-sm font-medium text-gray-300 hover:text-red-500 transition-colors"
+          >
+            Produtos
+          </a>
+
+          {{-- Botão Sair - ajustar cor --}}
+          @form({ action: route('logout'), method: 'POST', class: 'inline' })
+            <button
+              type="submit"
+              class="text-sm font-medium text-red-500 hover:text-red-400 hover:underline transition-colors"
+            >
+              Sair
+            </button>
+          @end
         </div>
-          @endif
-
-          <span class="text-sm font-medium text-gray-700">
-        {{ auth.user.fullName }}
-          </span>
-        </a>
-
-        @form({ action: route('logout'), method: 'POST', class: 'inline' })
-          <button type="submit" class="text-red-600 text-sm font-medium hover:underline">
-        Sair
-          </button>
-        @end
-      </div>
-    @else
-      <div>
-        <a
-          href="{{ route('login.show') }}"
-          class="text-sm font-medium text-indigo-600 hover:text-indigo-800"
-        >
-          Entrar
-        </a>
-        <a
-          href="{{ route('register.create') }}"
-          class="ml-4 text-sm font-medium text-indigo-600 hover:text-indigo-800"
-        >
-          Registrar
-        </a>
-      </div>
-    @endif
+      @else
+        <div>
+          {{-- Links Entrar/Registar - ajustar cor --}}
+          <a
+            href="{{ route('login.show') }}"
+            class="text-sm font-medium text-gray-300 hover:text-red-500 transition-colors"
+          >
+            Entrar
+          </a>
+          <a
+            href="{{ route('register.create') }}"
+            class="ml-4 text-sm font-medium text-gray-300 hover:text-red-500 transition-colors"
+          >
+            Registrar
+          </a>
+        </div>
+      @endif
+    </div>
   </div>
 </div>
