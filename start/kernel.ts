@@ -14,6 +14,7 @@ server.use([
   // Session and auth need to be here (in server.use)
   () => import('@adonisjs/session/session_middleware'),
   () => import('@adonisjs/auth/initialize_auth_middleware'),
+  () => import('#middleware/silent_auth_middleware'),
 ])
 
 /**

@@ -3,9 +3,10 @@ import { cuid } from '@adonisjs/core/helpers'
 
 import Product from '#models/product'
 
-import { createProductValidator } from '#validators/product'
+import { createProductValidator, updateProductValidator } from '#validators/product'
 import app from '@adonisjs/core/services/app'
 import Image from '#models/image'
+import fs from 'node:fs/promises'
 
 export default class ProductsController {
   public async index({ view }: HttpContext) {
@@ -33,7 +34,6 @@ export default class ProductsController {
 
   public async store({ request, response, session }: HttpContext) {
     console.log('Iniciando criação de produto...')
-    // Adicionar 'session'
     const payload = await request.validateUsing(createProductValidator)
 
     const product = await Product.create({
@@ -54,7 +54,6 @@ export default class ProductsController {
 
     console.log('passou dali')
 
-    // Verificar se a imagem foi movida com sucesso antes de salvar
     if (payload.image.state === 'moved') {
       await image.save()
       console.log('Produto criado:', product.toJSON())
@@ -63,26 +62,67 @@ export default class ProductsController {
       session.flash({ success: `Produto "${product.name}" criado com sucesso!` })
       return response.redirect().toRoute('products.show', { id: product.id })
     } else {
-      // Se houve erro ao mover a imagem, mostrar erro e voltar
-      // Opcional: Poderia tentar apagar o produto que foi criado sem imagem
-      // await product.delete()
       console.error('Erro ao mover imagem:', payload.image.errors)
       session.flash({
         error: `Erro ao fazer upload da imagem: ${payload.image.errors[0]?.message || 'Erro desconhecido'}`,
       })
-      return response.redirect().back() // Voltar para o formulário
+      return response.redirect().back()
     }
   }
 
-  public async update({ params, request, response }: HttpContext) {
+  public async update({ params, request, response, session }: HttpContext) {
     const product = await Product.findOrFail(params.id)
 
-    const payload = await request.validateUsing(createProductValidator)
+    const payload = await request.validateUsing(updateProductValidator)
 
-    product.merge(payload)
-    await product.save()
+    if (payload.image) {
+      await product.load('images')
+      const oldImage = product.images.length > 0 ? product.images[0] : null
 
-    return response.redirect().toRoute('products.show', { id: product.id })
+      const newImageName = `${cuid()}.${payload.image.extname}`
+      await payload.image.move(app.makePath('tmp/uploads'), {
+        name: newImageName,
+        overwrite: true,
+      })
+
+      if (payload.image.state === 'moved') {
+        if (oldImage) {
+          try {
+            await fs.unlink(app.makePath('tmp/uploads', oldImage.name))
+            oldImage.name = newImageName
+            await oldImage.save()
+            console.log('Imagem antiga apagada e registo atualizado:', oldImage.name)
+          } catch (error) {
+            console.error('Erro ao apagar imagem antiga ou atualizar registo:', error)
+          }
+        } else {
+          await Image.create({
+            productId: product.id,
+            name: newImageName,
+          })
+          console.log('Nova imagem criada:', newImageName)
+        }
+      } else {
+        console.error('Erro ao mover nova imagem:', payload.image.errors)
+        session.flash({
+          error: `Erro ao fazer upload da nova imagem: ${payload.image.errors[0]?.message || 'Erro desconhecido'}`,
+        })
+        return response.redirect().back()
+      }
+    }
+
+    const { image, ...productData } = payload
+    product.merge(productData)
+
+    try {
+      await product.save()
+      session.flash({ success: `Produto "${product.name}" atualizado com sucesso!` })
+      return response.redirect().toRoute('products.show', { id: product.id })
+    } catch (dbError) {
+      console.error('Erro ao salvar produto:', dbError)
+      session.flash({ error: `Erro ao salvar as alterações do produto: ${dbError.message}` })
+      return response.redirect().back()
+    }
   }
 
   public async destroy({ params, response }: HttpContext) {

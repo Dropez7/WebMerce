@@ -17,9 +17,8 @@ const AuthController = () => import('#controllers/auth_controller')
 
 // Rota de GET
 router
-  .get('/', async ({ view, auth }) => {
-    await auth.check()
-    return view.render('pages/home', { auth, title: 'Home' })
+  .get('/', async ({ view }) => {
+    return view.render('pages/home', { title: 'Home' })
   })
   .as('home')
 
@@ -49,8 +48,8 @@ router.post('/login', [AuthController, 'storeLogin']).as('login.store').use(midd
 router
   .group(() => {
     router.get('/profile', [ProfileController, 'edit']).as('profile.edit')
-    router.put('/profile', [ProfileController, 'update']).as('profile.update') // Usar PUT para atualização
+    router.put('/profile', [ProfileController, 'update']).as('profile.update')
   })
   .use(middleware.auth())
 
-router.get('/avatars/:filename', [ImagesController, 'showAvatar']).as('avatars.show') // <--- Verifique esta linha
+router.get('/avatars/:filename', [ImagesController, 'showAvatar']).as('avatars.show')

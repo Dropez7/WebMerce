@@ -1,64 +1,98 @@
-@layout.app({ title: 'oi' })
+@let(pageTitle = product ? 'Editar Produto' : 'Criar Novo Produto')
+
+@layout.app({ title: pageTitle })
   @slot('main')
-    @let(url = product ? route('products.update', { id: product.id }, { qs: { _method: 'PUT' } }) : route('products.store'))
+    <div class="mx-auto max-w-2xl">
+      <div class="bg-gray-800 shadow-lg rounded-lg p-8 border border-gray-700">
 
-    @form({ action: url, method: 'POST', enctype: 'multipart/form-data' })
-      <div class="space-y-12">
-        <div class="border-b border-gray-900/10 pb-12">
-          <h2 class="text-base/7 font-semibold text-gray-900">
-            Produto
-          </h2>
-          <p class="mt-1 text-sm/6 text-gray-600">
-            Esta informação será exibida publicamente, portanto, tenha cuidado com o que compartilha.
-          </p>
+        <h1 class="form-title text-center mb-8">
+          {{ pageTitle }}
+        </h1>
 
-          <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-            <div class="sm:col-span-3">
-              <label for="first-name" class="block text-sm/6 font-medium text-gray-900">Nome</label>
+        @let(url = product ? route('products.update', { id: product.id }, { qs: { _method: 'PUT' } }) : route('products.store'))
+
+        @form({ action: url, method: 'POST', enctype: 'multipart/form-data' })
+          <div class="space-y-6">
+
+            <div>
+              <label for="name">Nome do Produto</label>
               <div class="mt-2">
                 @!input({
                   type: 'text',
                   name: 'name',
-                  placeholder: 'nome ...',
-                  value: product?.name || ''
+                  id: 'name',
+                  placeholder: 'Ex: Guitarra Flying V',
+                  value: old('name', product?.name || ''),
+                  class: 'input-rock w-full'
                 })
+                @!component('components/layout/partials/input_error', { field: 'name' })
               </div>
             </div>
 
-            <div class="sm:col-span-3">
-              <label for="first-name" class="block text-sm/6 font-medium text-gray-900">Preço</label>
+            <div>
+              <label for="price">Preço (R$)</label>
               <div class="mt-2">
                 @!input({
                   type: 'number',
                   name: 'price',
-                  placeholder: 'preço ...',
-                  value: product?.price || ''
+                  id: 'price',
+                  placeholder: '666.00',
+                  value: old('price', product?.price || ''),
+                  step: '0.01',
+                  class: 'input-rock'
                 })
+                @!component('components/layout/partials/input_error', { field: 'price' })
               </div>
             </div>
 
-            <div class="sm:col-span-3">
-              <label for="first-name" class="block text-sm/6 font-medium text-gray-900">Imagem do Produto</label>
+            <div>
+              <label for="description">Descrição</label>
               <div class="mt-2">
-                <input type="file" name="image" accept="image/png, image/jpeg" />
+                @!textarea({
+                  name: 'description',
+                  id: 'description',
+                  rows: 4,
+                  placeholder: 'Descreva este item brutal...',
+                  value: old('description', product?.description || ''),
+                  class: 'input-rock'
+                })
+                @!component('components/layout/partials/input_error', { field: 'description' })
               </div>
             </div>
 
-            @!textarea({
-              name: 'description',
-              value: product?.description || ''
-            })
+            <div>
+              <label for="image">Imagem do Produto</label>
+              <p class="text-xs text-gray-400 mt-1 mb-2">
+                @if(product)
+                  Deixe em branco para manter a imagem atual.
+                @else
+                  A imagem é obrigatória.
+                @endif
+              </p>
+              <div class="mt-2">
+                <input
+                  type="file"
+                  name="image"
+                  id="image"
+                  class="input-rock file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-red-600 file:text-white hover:file:bg-red-700"
+                  accept="image/png, image/jpeg, image/webp, image/gif"
+                />
+                @!component('components/layout/partials/input_error', { field: 'image' })
+              </div>
+            </div>
+
           </div>
-        </div>
+
+          <div class="mt-10 flex items-center justify-end gap-x-6 border-t border-gray-700 pt-6">
+            <a href="{{ route('products.index') }}" class="btn-secondary-rock">
+              Cancelar
+            </a>
+            <button type="submit" class="btn-rock">
+              {{ product ? 'Salvar Alterações' : 'Criar Produto' }}
+            </button>
+          </div>
+        @end
       </div>
-      <div class="mt-6 flex items-center justify-end gap-x-6">
-        <a href="{{ route('products.index') }}" class="btn-secondary">
-          Cancelar
-        </a>
-        <button type="submit" class="btn">
-          {{ product ? 'Salvar' : 'Criar' }}
-        </button>
-      </div>
-    @end
+    </div>
   @end
 @end

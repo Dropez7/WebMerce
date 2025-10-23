@@ -5,15 +5,10 @@
       Editar Perfil
     </h1>
 
-    {{-- Mensagens Flash --}}
-    @!component('components/layout/partials/flash_messages')
-
-    {{-- Adicionar enctype para permitir upload de ficheiros --}}
     @form({ action: route('profile.update', { }, { qs: { _method: 'PUT' } }), method: 'POST', enctype: 'multipart/form-data' })
       <div class="space-y-12">
         <div class="border-b border-gray-900/10 pb-12">
 
-          {{-- Secção de Avatar --}}
           <div class="mb-8">
             <h2 class="text-base/7 font-semibold text-gray-900 mb-2">
               Imagem de Perfil
@@ -22,7 +17,6 @@
               @if(avatarUrl)
                 <img src="{{ avatarUrl }}" alt="Avatar Atual" class="h-20 w-20 rounded-full object-cover" />
               @else
-                {{-- Placeholder se não houver avatar --}}
                 <div class="h-20 w-20 rounded-full bg-gray-300 flex items-center justify-center text-gray-500">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -47,7 +41,7 @@
                     type="file"
                     name="avatar"
                     id="avatar"
-                    class="input file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100"
+                    class="input file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-red-600 file:text-white hover:file:bg-red-500 flex align-middle border-0"
                     accept="image/png, image/jpeg, image/webp, image/gif"
                   />
                   @if(flashMessages.has(`errors.avatar`))
@@ -62,7 +56,6 @@
               </div>
             </div>
           </div>
-          {{-- Fim da Secção de Avatar --}}
 
           <h2 class="text-base/7 font-semibold text-gray-900">
             Informações Pessoais
@@ -72,7 +65,6 @@
           </p>
 
           <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-            {{-- Nome Completo --}}
             <div class="sm:col-span-3">
               <label for="fullName" class="block text-sm/6 font-medium text-gray-900">Nome Completo</label>
               <div class="mt-2">
@@ -86,7 +78,6 @@
               </div>
             </div>
 
-            {{-- Idade --}}
             <div class="sm:col-span-3">
               <label for="age" class="block text-sm/6 font-medium text-gray-900">Idade</label>
               <div class="mt-2">
@@ -100,7 +91,6 @@
               </div>
             </div>
 
-            {{-- Endereço Completo --}}
             <div class="col-span-full">
               <label for="address" class="block text-sm/6 font-medium text-gray-900">Endereço</label>
               <div class="mt-2">
@@ -115,7 +105,6 @@
               </div>
             </div>
 
-            {{-- CEP --}}
             <div class="sm:col-span-2">
               <label for="postalCode" class="block text-sm/6 font-medium text-gray-900">CEP</label>
               <div class="mt-2">
@@ -130,7 +119,6 @@
               </div>
             </div>
 
-            {{-- Nacionalidade --}}
             <div class="sm:col-span-2">
               <label for="nationality" class="block text-sm/6 font-medium text-gray-900">Nacionalidade</label>
               <div class="mt-2">
@@ -144,7 +132,6 @@
               </div>
             </div>
 
-            {{-- Sexo --}}
             <div class="sm:col-span-2">
               <label for="gender" class="block text-sm/6 font-medium text-gray-900">Sexo</label>
               <div class="mt-2">
@@ -172,7 +159,6 @@
               </div>
             </div>
 
-            {{-- Telefone --}}
             <div class="sm:col-span-3">
               <label for="phone" class="block text-sm/6 font-medium text-gray-900">Telefone</label>
               <div class="mt-2">
@@ -188,13 +174,9 @@
             </div>
 
           </div>
-          {{-- Fim do grid --}}
         </div>
-        {{-- Fim do border-b --}}
       </div>
-      {{-- Fim do space-y-12 --}}
 
-      {{-- Botão de Salvar --}}
       <div class="mt-6 flex items-center justify-end gap-x-6">
         <button type="submit" class="btn">
           Salvar Alterações

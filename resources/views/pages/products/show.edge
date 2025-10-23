@@ -1,27 +1,69 @@
-@layout.app({ title: 'oi' })
+@layout.app({ title: product.name })
 
   @slot('main')
-    <div>
+    <div classT="overflow-hidden">
+      <div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-10 lg:gap-x-16">
+
+          <div class="flex flex-col items-center">
+            @let(firstImage = product.images?.[0])
+            <div class="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-700 shadow-lg border border-gray-700">
+              @if(firstImage)
+                <img
+                  src="{{ route('images.show', { name: firstImage.name }) }}"
+                  alt="{{ product.name }}"
+                  class="h-full w-full object-cover object-center"
+                >
+              @else
+                <div class="h-full w-full flex items-center justify-center bg-gray-700 text-gray-500">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-24 h-24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm16.5-1.5v-1.875a.375.375 0 0 0-.375-.375h-15a.375.375 0 0 0-.375.375V19.5Z" />
+                  </svg>
+                </div>
+              @endif
+            </div>
+          </div>
+
+          <div class="flex flex-col justify-between">
+            <div>
+              <h1 class="text-3xl font-bold tracking-tight text-red-500 sm:text-4xl uppercase">
+                {{ product.name }}
+              </h1>
+
+              <p class="mt-4 text-3xl tracking-tight text-gray-100 font-bold">
+                R$ {{ product.price.toFixed(2).replace('.', ',') }}
+              </p>
+
+              <div class="mt-6 space-y-6">
+                <h2 class="text-xl font-semibold text-gray-200">Descrição</h2>
+                <p class="text-base text-gray-400">
+                  {{ product.description }}
+                </p>
+              </div>
+            </div>
+
+            <div classE="mt-10 flex gap-x-4">
+              <a
+                href="{{ route('products.edit', { id: product.id }) }}"
+                class="btn-secondary-rock"
+              >
+                Editar Produto
+              </a>
+
+              @form({ action: route('products.destroy', { id: product.id }, { qs: { _method: 'DELETE' }}) })
+                <button
+                  type="submit"
+                  class="btn-rock"
+                  onclick="return confirm('Tem certeza que quer deletar este item? Esta ação é irreversível!')"
+                >
+                  Deletar Produto
+                </button>
+              @end
+            </div>
+
+          </div>
+        </div>
+      </div>
     </div>
-    <h1>
-      Produto
-    </h1>
-  </div>
-  <div>
-    <span>
-      {{ product.name }}
-  </span>
-    <span>
-      {{ product.price }}
-  </span>
-    <span>
-      {{ product.description }}
-  </span>
-
-    @each(image in product.images)
-      <img src="{{ route('images.show', { name: image.name }) }}" />
-    @end
-  </div>
-@end
-
+  @end
 @end

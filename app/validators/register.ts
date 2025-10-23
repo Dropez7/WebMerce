@@ -12,12 +12,11 @@ export const registerValidator = vine.compile(
       .email()
       .normalizeEmail()
       .unique(async (db, value) => {
-        // Verifica se o email já existe na tabela 'users'
         const user = await db.from('users').where('email', value).first()
-        return !user // Retorna true se o email NÃO existe (é único)
+        return !user
       }),
     password: vine.string().minLength(8).confirmed({
-      confirmationField: 'password_confirmation', // Nome do campo de confirmação
+      confirmationField: 'password_confirmation',
     }),
   })
 )
