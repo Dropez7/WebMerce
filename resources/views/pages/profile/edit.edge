@@ -135,21 +135,35 @@
             <div class="sm:col-span-2">
               <label for="gender" class="block text-sm/6 font-medium text-gray-900">Sexo</label>
               <div class="mt-2">
-                <select name="gender" id="gender" class="input">
-                  <option value="">
+                <select 
+                  name="gender" 
+                  id="gender" 
+                  class="input bg-gray-900 text-gray-100 border border-gray-700 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500"
+                >
+                  <option value="" class="bg-gray-900 text-gray-400">
                     Selecione...
                   </option>
-                  <option value="male" {{ old('gender', user.gender) === 'male' ? 'selected' : '' }}>
+                  <option 
+                    value="male" 
+                    class="bg-gray-900 text-gray-100" 
+                    {{ old('gender', user.gender) === 'male' ? 'selected' : '' }}>
                     Masculino
                   </option>
-                  <option value="female" {{ old('gender', user.gender) === 'female' ? 'selected' : '' }}>
+                  <option 
+                    value="female" 
+                    class="bg-gray-900 text-gray-100"
+                    {{ old('gender', user.gender) === 'female' ? 'selected' : '' }}>
                     Feminino
                   </option>
-                  <option value="other" {{ old('gender', user.gender) === 'other' ? 'selected' : '' }}>
+                  <option 
+                    value="other" 
+                    class="bg-gray-900 text-gray-100"
+                    {{ old('gender', user.gender) === 'other' ? 'selected' : '' }}>
                     Outro
                   </option>
                   <option
                     value="prefer_not_to_say"
+                    class="bg-gray-900 text-gray-100"
                     {{ old('gender', user.gender) === 'prefer_not_to_say' ? 'selected' : '' }}
                   >
                     Prefiro não dizer

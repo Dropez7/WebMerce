@@ -1,7 +1,7 @@
 @layout.app({ title: product.name })
 
   @slot('main')
-    <div classT="overflow-hidden">
+    <div class="overflow-hidden">
       <div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-10 lg:gap-x-16">
 
@@ -42,7 +42,7 @@
               </div>
             </div>
 
-            <div classE="mt-10 flex gap-x-4">
+            <div class="mt-10 flex flex-col sm:flex-row gap-4">
               <a
                 href="{{ route('products.edit', { id: product.id }) }}"
                 class="btn-secondary-rock"

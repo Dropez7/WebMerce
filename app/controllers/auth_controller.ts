@@ -27,7 +27,7 @@ export default class AuthController {
       
       await auth.use('web').login(user)
       session.flash({ success: 'Conta criada com sucesso!' })
-      return response.redirect().toRoute('/')
+      return response.redirect().toRoute('products.index')
     } catch (error) {
       console.error('Erro ao criar usuário:', error) // Debug log
       session.flash({ error: 'Erro ao criar a conta. Tente novamente.', ...request.all() })
@@ -52,7 +52,7 @@ export default class AuthController {
       const user = await User.verifyCredentials(email, password)
       await auth.use('web').login(user)
       session.flash({ success: 'Login realizado com sucesso!' })
-      return response.redirect().toRoute('/')
+      return response.redirect().toRoute('products.index')
     } catch (error) {
       session.flash({ error: 'Email ou senha inválidos.', email: request.input('email') })
       return response.redirect().back()
