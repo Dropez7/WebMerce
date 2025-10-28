@@ -33,3 +33,40 @@ label {
 h1.form-title {
    @apply text-2xl font-bold mb-6 text-red-500 uppercase tracking-wider;
 }
+
+/* Animações para a página inicial */
+@keyframes rockPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.rock-pulse {
+  animation: rockPulse 2s ease-in-out infinite;
+}
+
+.float-animation {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Efeito de brilho para botões */
+.btn-rock:hover {
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+}
+
+/* Gradiente animado para o título */
+.animated-gradient {
+  background: linear-gradient(-45deg, #ef4444, #dc2626, #b91c1c, #991b1b);
+  background-size: 400% 400%;
+  animation: gradientShift 3s ease infinite;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}

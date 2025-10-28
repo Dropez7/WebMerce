@@ -63,12 +63,14 @@
         <div>
           <label for="password" class="block text-sm/6 font-medium text-gray-900">Senha</label>
           <div class="mt-2">
-            @!input({
-            type: 'password',
-            name: 'password',
-            id: 'password',
-            placeholder: '********'
-            })
+            <input 
+              type="password" 
+              name="password" 
+              id="password" 
+              placeholder="********"
+              class="input"
+              required
+            />
             @if(flashMessages.has(`errors.password`))
               <p class="text-red-500 text-xs mt-1">
                 {{ flashMessages.get(`errors.password`)[0].message }}
@@ -80,12 +82,14 @@
         <div>
           <label for="password_confirmation" class="block text-sm/6 font-medium text-gray-900">Confirmar Senha</label>
           <div class="mt-2">
-            @!input({
-            type: 'password',
-            name: 'password_confirmation',
-            id: 'password_confirmation',
-            placeholder: '********'
-            })
+            <input 
+              type="password" 
+              name="password_confirmation" 
+              id="password_confirmation" 
+              placeholder="********"
+              class="input"
+              required
+            />
             @if(flashMessages.has(`errors.password_confirmation`))
               <p class="text-red-500 text-xs mt-1">
                 {{ flashMessages.get(`errors.password_confirmation`)[0].message }}

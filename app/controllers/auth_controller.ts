@@ -16,14 +16,20 @@ export default class AuthController {
    * Handle user registration form submission
    */
   async store({ request, response, auth, session }: HttpContext) {
-    const payload = await request.validateUsing(registerValidator)
-
+    console.log('Dados brutos da requisição:', request.all()) // Debug log
+    
     try {
+      const payload = await request.validateUsing(registerValidator)
+      console.log('Payload validado:', payload) // Debug log
+      
       const user = await User.create(payload)
+      console.log('Usuário criado:', user.toJSON()) // Debug log
+      
       await auth.use('web').login(user)
       session.flash({ success: 'Conta criada com sucesso!' })
       return response.redirect().toRoute('/')
     } catch (error) {
+      console.error('Erro ao criar usuário:', error) // Debug log
       session.flash({ error: 'Erro ao criar a conta. Tente novamente.', ...request.all() })
       return response.redirect().back()
     }
