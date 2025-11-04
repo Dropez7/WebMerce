@@ -5,6 +5,7 @@ export const createProductValidator = vine.compile(
     name: vine.string().trim().minLength(3).maxLength(255),
     price: vine.number().positive(),
     description: vine.string().minLength(3).trim(),
+    quantity: vine.number().min(0),
     image: vine.file({
       size: '2mb',
       extnames: ['jpg', 'png', 'jpeg', 'webp', 'gif'],
@@ -17,6 +18,7 @@ export const updateProductValidator = vine.compile(
     name: vine.string().trim().minLength(3).maxLength(255).optional(),
     price: vine.number().positive().optional(),
     description: vine.string().minLength(3).trim().optional(),
+    quantity: vine.number().min(0).optional(),
     image: vine
       .file({
         size: '2mb',

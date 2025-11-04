@@ -13,6 +13,9 @@ const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
 // Defina o tipo para o género para melhor type safety
 type Gender = 'male' | 'female' | 'other' | 'prefer_not_to_say'
 
+// Defina o tipo para roles de usuário
+type UserRole = 'admin' | 'user'
+
 export default class User extends compose(BaseModel, AuthFinder) {
   @column({ isPrimary: true })
   declare id: number
@@ -47,6 +50,9 @@ export default class User extends compose(BaseModel, AuthFinder) {
   @column()
   declare avatarFilename: string | null
 
+  @column()
+  declare role: UserRole
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 
@@ -57,9 +63,24 @@ export default class User extends compose(BaseModel, AuthFinder) {
    * Hash password before saving
    */
   @beforeSave()
-  static async hashPassword(user: User) {
+  static async hashPassword(user: any) {
     if (user.$dirty.password) {
-      user.password = await hash.make(user.password)
+      // Usar o mesmo driver scrypt que o withAuthFinder usa
+      user.password = await hash.use('scrypt').make(user.password)
     }
+  }
+
+  /**
+   * Check if user is admin
+   */
+  isAdmin(): boolean {
+    return this.role === 'admin'
+  }
+
+  /**
+   * Check if user is regular user
+   */
+  isUser(): boolean {
+    return this.role === 'user'
   }
 }

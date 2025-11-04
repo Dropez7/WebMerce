@@ -2,7 +2,7 @@
 
 @layout.app({ title: pageTitle })
   @slot('main')
-    <div class="mx-auto max-w-2xl">
+    <div class="mx-auto max-w-4xl">
       <div class="bg-gray-800 shadow-lg rounded-lg p-8 border border-gray-700">
 
         <h1 class="form-title text-center mb-8">
@@ -46,15 +46,31 @@
             </div>
 
             <div>
+              <label for="quantity">Quantidade em Estoque</label>
+              <div class="mt-2">
+                @!input({
+                  type: 'number',
+                  name: 'quantity',
+                  id: 'quantity',
+                  placeholder: '0',
+                  value: old('quantity', product?.quantity ?? 0),
+                  min: '0',
+                  class: 'input-rock'
+                })
+                @!component('components/layout/partials/input_error', { field: 'quantity' })
+              </div>
+            </div>
+
+            <div>
               <label for="description">Descrição</label>
               <div class="mt-2">
                 @!textarea({
                   name: 'description',
                   id: 'description',
-                  rows: 4,
+                  rows: 3,
                   placeholder: 'Descreva este item brutal...',
                   value: old('description', product?.description || ''),
-                  class: 'input-rock'
+                  class: 'input-rock w-full resize-none'
                 })
                 @!component('components/layout/partials/input_error', { field: 'description' })
               </div>
