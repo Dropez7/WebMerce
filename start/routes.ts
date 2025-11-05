@@ -1,12 +1,3 @@
-/*
-|--------------------------------------------------------------------------
-| Routes file
-|--------------------------------------------------------------------------
-|
-| The routes file is used for defining the HTTP routes.
-|
-*/
-
 import router from '@adonisjs/core/services/router'
 import { middleware } from '#start/kernel'
 
@@ -15,24 +6,33 @@ const ImagesController = () => import('#controllers/images_controller')
 const ProfileController = () => import('#controllers/profiles_controller')
 const AuthController = () => import('#controllers/auth_controller')
 
-// Rota de GET
 router
   .get('/', async ({ view }) => {
-    return view.render('pages/home', { title: 'Home' })
+    const Product = (await import('#models/product')).default
+    const products = await Product.query().preload('images').limit(8)
+    return view.render('pages/home', { title: 'Home', products })
   })
   .as('home')
 
-// Rotas de Produtos
-router.resource('/products', ProductsController).as('products')
+router.get('/products', [ProductsController, 'index']).as('products.index')
+router.get('/products/:id', [ProductsController, 'show']).as('products.show')
 
-// Rota de Imagens
+router
+  .group(() => {
+    router.get('/products/create', [ProductsController, 'create']).as('products.create')
+    router.get('/products/:id/edit', [ProductsController, 'edit']).as('products.edit')
+    router.post('/products', [ProductsController, 'store']).as('products.store')
+    router.put('/products/:id', [ProductsController, 'update']).as('products.update')
+    router.delete('/products/:id', [ProductsController, 'destroy']).as('products.destroy')
+  })
+  .use(middleware.auth())
+  .use(middleware.admin())
+
 router.get('/images/:name', [ImagesController, 'show']).as('images.show')
 
-// Rotas de Cadastro
 router.get('/register', [AuthController, 'create']).as('register.create').use(middleware.guest())
 router.post('/register', [AuthController, 'store']).as('register.store').use(middleware.guest())
 
-// Rotas de Logout
 router
   .post('/logout', async ({ auth, response }) => {
     await auth.use('web').logout()
@@ -41,7 +41,6 @@ router
   .as('logout')
   .use(middleware.auth())
 
-// Rotas de Login
 router.get('/login', [AuthController, 'showLogin']).as('login.show').use(middleware.guest())
 router.post('/login', [AuthController, 'storeLogin']).as('login.store').use(middleware.guest())
 

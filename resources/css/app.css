@@ -6,6 +6,13 @@ h1, h2, h3 {
   font-family: 'New Rocker', sans-serif;
 }
 
+/* Fonte para o logo no navbar - mesma fonte de "Produtos Que Detonam!" */
+.logo-text {
+  font-family: 'New Rocker', sans-serif;
+  font-size: 1.75rem;
+  letter-spacing: 0.05em;
+}
+
 .input-rock {
   @apply block w-full rounded-md border-0 py-1.5 px-3 bg-gray-700 text-gray-100 shadow-sm ring-1 ring-inset ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-red-600 sm:text-sm sm:leading-6 transition-colors duration-200;
 }
@@ -69,4 +76,20 @@ h1.form-title {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
+}
+
+/* Home page - fundo vermelho em toda a tela */
+.home-full-screen {
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  width: 100vw;
+  min-height: 100vh;
+  margin-top: calc(-2.5rem - 2rem - 120px);
+  margin-bottom: calc(-2.5rem - 2rem);
+  padding-top: calc(2.5rem + 2rem + 120px);
+  padding-bottom: calc(2.5rem + 2rem);
+  z-index: 0;
 }

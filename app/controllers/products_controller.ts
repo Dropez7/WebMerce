@@ -33,7 +33,6 @@ export default class ProductsController {
   }
 
   public async store({ request, response, session }: HttpContext) {
-    console.log('Iniciando criação de produto...')
     const payload = await request.validateUsing(createProductValidator)
 
     const product = await Product.create({
@@ -42,30 +41,22 @@ export default class ProductsController {
       price: payload.price,
       quantity: payload.quantity,
     })
-    console.log('oia so')
+
     const image = new Image()
     image.name = `${cuid()}.${payload.image.extname}`
     image.productId = product.id
-
-    console.log('vai entrar ali')
 
     await payload.image.move(app.makePath('tmp/uploads'), {
       name: image.name,
     })
 
-    console.log('passou dali')
-
     if (payload.image.state === 'moved') {
       await image.save()
-      console.log('Produto criado:', product.toJSON())
-      console.log('Imagem salva:', image.toJSON())
-      // Adicionar a mensagem flash ANTES do redirect
       session.flash({ success: `Produto "${product.name}" criado com sucesso!` })
       return response.redirect().toRoute('products.show', { id: product.id })
     } else {
-      console.error('Erro ao mover imagem:', payload.image.errors)
       session.flash({
-        error: `Erro ao fazer upload da imagem: ${payload.image.errors[0]?.message || 'Erro desconhecido'}`,
+        error: 'Erro ao processar sua solicitação. Tente novamente.',
       })
       return response.redirect().back()
     }
@@ -88,25 +79,18 @@ export default class ProductsController {
 
       if (payload.image.state === 'moved') {
         if (oldImage) {
-          try {
-            await fs.unlink(app.makePath('tmp/uploads', oldImage.name))
-            oldImage.name = newImageName
-            await oldImage.save()
-            console.log('Imagem antiga apagada e registo atualizado:', oldImage.name)
-          } catch (error) {
-            console.error('Erro ao apagar imagem antiga ou atualizar registo:', error)
-          }
+          await fs.unlink(app.makePath('tmp/uploads', oldImage.name))
+          oldImage.name = newImageName
+          await oldImage.save()
         } else {
           await Image.create({
             productId: product.id,
             name: newImageName,
           })
-          console.log('Nova imagem criada:', newImageName)
         }
       } else {
-        console.error('Erro ao mover nova imagem:', payload.image.errors)
         session.flash({
-          error: `Erro ao fazer upload da nova imagem: ${payload.image.errors[0]?.message || 'Erro desconhecido'}`,
+          error: 'Erro ao processar sua solicitação. Tente novamente.',
         })
         return response.redirect().back()
       }
@@ -115,15 +99,9 @@ export default class ProductsController {
     const { image, ...productData } = payload
     product.merge(productData)
 
-    try {
-      await product.save()
-      session.flash({ success: `Produto "${product.name}" atualizado com sucesso!` })
-      return response.redirect().toRoute('products.show', { id: product.id })
-    } catch (dbError) {
-      console.error('Erro ao salvar produto:', dbError)
-      session.flash({ error: `Erro ao salvar as alterações do produto: ${dbError.message}` })
-      return response.redirect().back()
-    }
+    await product.save()
+    session.flash({ success: `Produto "${product.name}" atualizado com sucesso!` })
+    return response.redirect().toRoute('products.show', { id: product.id })
   }
 
   public async destroy({ params, response }: HttpContext) {
