@@ -19,7 +19,7 @@ export default class extends BaseSeeder {
       },
       {
         name: 'Camiseta Red Hot Chili Peppers Pretar',
-        description: 'A Camiseta Red Hot Chili Peppers é feita em tecido de algodão, macio e confortável. Além da alta qualidade do material, a resolução da estampa em silk screen é perfeita. É muito estilo e atitude em uma peça só..',
+        description: 'A Camiseta Red Hot Chili Peppers é feita em tecido de algodão, macio e confortável. Além da alta qualidade do material, a resolução da estampa em silk screen é perfeita. É muito estilo e atitude em uma peça só.',
         price: 79.99,
         quantity: 10,
         imageFileName: 'rhcp.jpg',
