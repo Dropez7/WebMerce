@@ -14,7 +14,9 @@ export default class AdminMiddleware {
      * Check if user is admin
      */
     if (!ctx.auth.user.isAdmin()) {
-      ctx.session.flash({ error: 'Acesso negado. Apenas administradores podem realizar esta ação.' })
+      ctx.session.flash({
+        error: 'Acesso negado. Apenas administradores podem realizar esta ação.',
+      })
       return ctx.response.redirect().toRoute('products.index')
     }
 

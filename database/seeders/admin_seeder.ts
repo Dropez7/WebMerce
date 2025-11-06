@@ -17,25 +17,23 @@ export default class extends BaseSeeder {
     if (existingAdmin) {
       await existingAdmin.delete()
     }
-    
+
     const hashedPassword = await hash.use('scrypt').make(adminPassword)
-    
+
     const now = new Date().toISOString().replace('T', ' ').substring(0, 19)
-    await db
-      .table('users')
-      .insert({
-        full_name: 'Administrador Rock n Roll',
-        email: adminEmail,
-        password: hashedPassword,
-        role: 'admin',
-        age: 30,
-        address: 'Backstage VIP',
-        postal_code: '00000-000',
-        nationality: 'Rock',
-        gender: 'other',
-        phone: '(00) 00000-0000',
-        created_at: now,
-        updated_at: now
-      })
+    await db.table('users').insert({
+      full_name: 'Administrador Rock n Roll',
+      email: adminEmail,
+      password: hashedPassword,
+      role: 'admin',
+      age: 30,
+      address: 'Backstage VIP',
+      postal_code: '00000-000',
+      nationality: 'Rock',
+      gender: 'other',
+      phone: '(00) 00000-0000',
+      created_at: now,
+      updated_at: now,
+    })
   }
 }

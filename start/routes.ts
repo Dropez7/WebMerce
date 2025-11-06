@@ -15,7 +15,10 @@ router
   .as('home')
 
 router.get('/products', [ProductsController, 'index']).as('products.index')
-router.get('/products/:id', [ProductsController, 'show']).as('products.show')
+router
+  .get('/products/:id', [ProductsController, 'show'])
+  .where('id', router.matchers.number())
+  .as('products.show')
 
 router
   .group(() => {

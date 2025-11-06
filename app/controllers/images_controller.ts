@@ -12,15 +12,15 @@ export default class ImagesController {
     if (image) {
       const publicImagePath = join(app.appRoot.toString(), 'public', 'products', params.name)
       const tmpImagePath = app.makePath('tmp/uploads', params.name)
-      
+
       let imagePath: string | null = null
-      
+
       if (fs.existsSync(publicImagePath)) {
         imagePath = publicImagePath
       } else if (fs.existsSync(tmpImagePath)) {
         imagePath = tmpImagePath
       }
-      
+
       if (imagePath) {
         const ext = params.name.split('.').pop()?.toLowerCase()
         const mimeTypes: Record<string, string> = {
@@ -31,7 +31,7 @@ export default class ImagesController {
           webp: 'image/webp',
         }
         const contentType = mimeTypes[ext || ''] || 'image/jpeg'
-        
+
         response.type(contentType)
         return response.stream(createReadStream(imagePath))
       }
@@ -44,7 +44,7 @@ export default class ImagesController {
     const avatarPath = app.makePath('tmp/avatars', filename)
 
     await fs.promises.access(avatarPath, fs.constants.R_OK)
-    
+
     const ext = filename.split('.').pop()?.toLowerCase()
     const mimeTypes: Record<string, string> = {
       jpg: 'image/jpeg',
@@ -54,7 +54,7 @@ export default class ImagesController {
       webp: 'image/webp',
     }
     const contentType = mimeTypes[ext || ''] || 'image/jpeg'
-    
+
     response.type(contentType)
     return response.stream(createReadStream(avatarPath))
   }

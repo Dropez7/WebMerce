@@ -61,19 +61,17 @@
               </div>
             </div>
 
-            <div class="col-span-2">
-              <label for="description">Descrição</label>
-              <div class="mt-2">
-                @!textarea({
-                  name: 'description',
-                  id: 'description',
-                  rows: 8,
-                  placeholder: 'Descreva este item brutal...',
-                  value: old('description', product?.description || ''),
-                  class: 'input-rock w-full resize-none'
-                })
-                @!component('components/layout/partials/input_error', { field: 'description' })
-              </div>
+            <label for="description">Descrição</label>
+            <div class="mt-2">
+              <textarea
+                name="description"
+                id="description"
+                rows="8"
+                placeholder="Descreva este item brutal..."
+                class="input-rock resize-none"
+              >{{ old('description', product?.description || '') }}</textarea>
+
+              @!component('components/layout/partials/input_error', { field: 'description' })
             </div>
 
             <div>
