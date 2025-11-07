@@ -3,7 +3,6 @@ import Product from '#models/product'
 import Image from '#models/image'
 import app from '@adonisjs/core/services/app'
 import fs from 'node:fs'
-import { join } from 'node:path'
 
 export default class extends BaseSeeder {
   async run() {
@@ -89,7 +88,7 @@ export default class extends BaseSeeder {
       const product = await Product.create(productFields)
 
       if (imageFileName) {
-        const publicImagePath = join(app.appRoot.toString(), 'public', 'products', imageFileName)
+        const publicImagePath = app.makePath('public', 'products', imageFileName)
         const tmpImagePath = app.makePath('tmp/uploads', imageFileName)
 
         const imageExistsInPublic = fs.existsSync(publicImagePath)

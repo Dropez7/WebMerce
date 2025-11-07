@@ -3,14 +3,13 @@ import app from '@adonisjs/core/services/app'
 import Image from '#models/image'
 import fs from 'node:fs'
 import { createReadStream } from 'node:fs'
-import { join } from 'node:path'
 
 export default class ImagesController {
   public async show({ params, response }: HttpContext) {
     const image = await Image.query().where('name', params.name).first()
 
     if (image) {
-      const publicImagePath = join(app.appRoot.toString(), 'public', 'products', params.name)
+      const publicImagePath = app.makePath('public', 'products', params.name)
       const tmpImagePath = app.makePath('tmp/uploads', params.name)
 
       let imagePath: string | null = null

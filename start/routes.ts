@@ -31,8 +31,6 @@ router
   .use(middleware.auth())
   .use(middleware.admin())
 
-router.get('/images/:name', [ImagesController, 'show']).as('images.show')
-
 router.get('/register', [AuthController, 'create']).as('register.create').use(middleware.guest())
 router.post('/register', [AuthController, 'store']).as('register.store').use(middleware.guest())
 
@@ -54,4 +52,5 @@ router
   })
   .use(middleware.auth())
 
+router.get('/images/:name', [ImagesController, 'show']).as('images.show')
 router.get('/avatars/:filename', [ImagesController, 'showAvatar']).as('avatars.show')
