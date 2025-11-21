@@ -81,6 +81,13 @@ export default class extends BaseSeeder {
         quantity: 100,
         imageFileName: 'kiss.jpeg',
       },
+      {
+        name: 'Camisa Metálica',
+        description: 'Camisa preta no material algodão - Banda Metálica.',
+        price: 84.99,
+        quantity: 12,
+        imageFileName: 'metálica.jpeg',
+      },
     ]
 
     for (const productData of products) {
