@@ -5,6 +5,7 @@ const ProductsController = () => import('#controllers/products_controller')
 const ImagesController = () => import('#controllers/images_controller')
 const ProfileController = () => import('#controllers/profiles_controller')
 const AuthController = () => import('#controllers/auth_controller')
+const PaymentsController = () => import('#controllers/payments_controller')
 
 router
   .get('/', async ({ view }) => {
@@ -54,3 +55,11 @@ router
 
 router.get('/images/:name', [ImagesController, 'show']).as('images.show')
 router.get('/avatars/:filename', [ImagesController, 'showAvatar']).as('avatars.show')
+
+router
+  .group(() => {
+    router.get('/checkout/:id', [PaymentsController, 'show']).as('checkout.show')
+    router.post('/checkout/:id', [PaymentsController, 'process']).as('checkout.process')
+    router.get('/checkout/:id/result', [PaymentsController, 'result']).as('checkout.result')
+  })
+  .use(middleware.auth())

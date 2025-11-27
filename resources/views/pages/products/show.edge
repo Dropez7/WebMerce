@@ -52,6 +52,15 @@
             </div>
 
             <div class="mt-10 flex flex-col sm:flex-row gap-4">
+              @if(product.quantity > 0)
+                @if(auth.user)
+                  <a href="{{ route('checkout.show', { id: product.id }) }}" class="btn-rock">Comprar</a>
+                @else
+                  <a href="{{ route('login.show') }}" class="btn-rock">Entrar para comprar</a>
+                  <a href="{{ route('register.create') }}" class="ml-2 btn-secondary-rock">Criar conta</a>
+                @endif
+              @endif
+
               @if(auth.user && auth.user.isAdmin())
                 <a
                   href="{{ route('products.edit', { id: product.id }) }}"
@@ -71,7 +80,7 @@
                 @end
               @else
                 <div class="text-center text-gray-400">
-                  <p class="text-sm">Faça login como administrador para gerenciar produtos</p>
+                  
                 </div>
               @endif
             </div>
