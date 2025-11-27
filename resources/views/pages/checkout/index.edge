@@ -11,7 +11,10 @@
         <div class="mb-4 text-green-400">{{ session.get('success') }}</div>
       @endif
 
-      @form({ action: route('checkout.process', { id: product.id }) })
+      {{-- CORREÇÃO AQUI: Definimos a action dinamicamente em uma única tag --}}
+      @form({ 
+        action: isCart ? route('checkout.cart_process') : route('checkout.process', { id: product.id }) 
+      })
         <div class="grid grid-cols-1 gap-4">
 
           <h2 class="text-lg font-semibold text-gray-200">Endereço de entrega</h2>
@@ -82,28 +85,59 @@
               @!component('components/layout/partials/input_error', { field: 'cvv' })
             </div>
           </div>
-          <hr class="my-6 border-gray-700" />
-          <div>
-            <label class="text-sm text-gray-300">Quantidade</label>
-            @!input({ id: 'quantity', type: 'number', name: 'quantity', min: '1', value: old('quantity', 1), class: 'w-full mt-1 p-2 rounded bg-gray-700 text-white' })
-            @!component('components/layout/partials/input_error', { field: 'quantity' })
-          </div>
 
-          <div class="flex flex-col sm:flex-row justify-between items-center mt-2 gap-2">
-            <div class="text-gray-300">
-              <div>Preço unitário: R$ {{ product.price.toFixed(2).replace('.', ',') }}</div>
-              <div class="font-bold text-white mt-1">Total: R$ <span id="totalPrice">{{ (Number(old('quantity', 1)) * product.price).toFixed(2).replace('.', ',') }}</span></div>
+          <hr class="my-6 border-gray-700" />
+
+          @if(isCart)
+            <input type="hidden" name="quantity" value="1">
+            <div>
+              <label class="text-sm text-gray-300">Resumo do Carrinho</label>
+              <div class="w-full mt-1 p-2 rounded bg-gray-800 text-gray-400 border border-gray-600">
+                @if(typeof items !== 'undefined' && items.length > 0)
+                  <ul class="space-y-2">
+                    @each(it in items)
+                      <li class="flex justify-between">
+                        <span class="text-gray-300">{{ it.product.name }} x {{ it.quantity }}</span>
+                        <span class="font-bold text-white">R$ {{ it.subtotal.toFixed(2).replace('.', ',') }}</span>
+                      </li>
+                    @end
+                  </ul>
+                @else
+                  <div>Itens do carrinho (Valor total calculado)</div>
+                @endif
+              </div>
             </div>
-            <button type="submit" class="btn-rock">Pagar</button>
-          </div>
+            <div class="flex flex-col sm:flex-row justify-between items-center mt-2 gap-2">
+              <div class="text-gray-300">
+                <div class="font-bold text-white mt-1">Total: R$ <span id="totalPrice">{{ total ? total.toFixed(2).replace('.', ',') : product.price.toFixed(2).replace('.', ',') }}</span></div>
+              </div>
+              <button type="submit" class="btn-rock">Pagar</button>
+            </div>
+          @else
+            <div>
+              <label class="text-sm text-gray-300">Quantidade</label>
+              @!input({ id: 'quantity', type: 'number', name: 'quantity', min: '1', value: old('quantity', 1), class: 'w-full mt-1 p-2 rounded bg-gray-700 text-white' })
+              @!component('components/layout/partials/input_error', { field: 'quantity' })
+            </div>
+
+            <div class="flex flex-col sm:flex-row justify-between items-center mt-2 gap-2">
+              <div class="text-gray-300">
+                <div>Preço unitário: R$ {{ product.price.toFixed(2).replace('.', ',') }}</div>
+                <div class="font-bold text-white mt-1">Total: R$ <span id="totalPrice">{{ (Number(old('quantity', 1)) * product.price).toFixed(2).replace('.', ',') }}</span></div>
+              </div>
+              <button type="submit" class="btn-rock">Pagar</button>
+            </div>
+          @endif
         </div>
-      @end
+      @end {{-- Fecha o @form --}}
 
       <script>
         (function () {
+          const isCart = {{ isCart ? 'true' : 'false' }}
           const qty = document.getElementById('quantity')
           const totalSpan = document.getElementById('totalPrice')
-          if (!qty || !totalSpan) return
+          if (!totalSpan) return
+          if (isCart || !qty) return
           const unit = Number({{ product.price }})
           const fmt = v => v.toFixed(2).replace('.', ',')
           const update = () => {
@@ -115,4 +149,5 @@
       </script>
     </div>
   @end
+@end
 @end

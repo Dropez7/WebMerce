@@ -54,7 +54,25 @@
             <div class="mt-10 flex flex-col sm:flex-row gap-4">
               @if(product.quantity > 0)
                 @if(auth.user)
-                  <a href="{{ route('checkout.show', { id: product.id }) }}" class="btn-rock">Comprar</a>
+                  {{-- Formulário para adicionar ao carrinho --}}
+                  @form({ action: route('cart.store') })
+                    <input type="hidden" name="productId" value="{{ product.id }}">
+                    <div class="flex items-center gap-4 w-full">
+                      <div class="w-20">
+                         @!input({
+                           type: 'number',
+                           name: 'quantity',
+                           value: '1',
+                           min: '1',
+                           max: product.quantity,
+                           class: 'input-rock text-center'
+                         })
+                      </div>
+                      <button type="submit" class="btn-rock flex-1">
+                        Adicionar ao Carrinho
+                      </button>
+                    </div>
+                  @end
                 @else
                   <a href="{{ route('login.show') }}" class="btn-rock">Entrar para comprar</a>
                   <a href="{{ route('register.create') }}" class="ml-2 btn-secondary-rock">Criar conta</a>

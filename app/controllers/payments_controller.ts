@@ -1,6 +1,7 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import Product from '#models/product'
 import { paymentValidator } from '#validators/payment'
+import router from '@adonisjs/core/services/router'
 
 export default class PaymentsController {
   public async show({ params, view }: HttpContext) {
@@ -55,6 +56,112 @@ export default class PaymentsController {
 
     session.put('lastOrder', { success: false, reason: 'Falha ao processar pagamento.' })
     return response.redirect().toRoute('checkout.result', { id: product.id })
+  }
+
+  // Novo Método: Exibir Checkout do Carrinho
+  public async checkoutCart({ view, session, response }: HttpContext) {
+    const cart = session.get('cart', {})
+    const productIds = Object.keys(cart)
+
+    if (productIds.length === 0) {
+      session.flash({ error: 'Seu carrinho está vazio!' })
+      return response.redirect().toRoute('products.index')
+    }
+
+    const products = await Product.findMany(productIds)
+
+    // Calcular total
+    let total = 0
+    let totalQuantity = 0
+    products.forEach((p) => {
+      const qty = cart[p.id]
+      total += p.price * qty
+      totalQuantity += qty
+    })
+
+    // Criar um "produto virtual" para reutilizar a view de checkout
+    const dummyProduct = {
+      id: 'cart',
+      name: `Carrinho (${totalQuantity} itens)`,
+      price: total,
+      description: 'Compra de múltiplos itens do carrinho.',
+      quantity: 1, // A quantidade no checkout será fixa em 1 (1 carrinho)
+    }
+
+    const currentYear = new Date().getFullYear()
+
+    return view.render('pages/checkout/index', {
+      product: dummyProduct,
+      currentYear,
+      isCart: true, // Flag para adaptar a view
+      formAction: router.makeUrl('checkout.cart_process'), // Ação do formulário
+    })
+  }
+
+  // Novo Método: Processar Pagamento do Carrinho
+  public async processCart({ request, response, session }: HttpContext) {
+    const payload = await request.validateUsing(paymentValidator)
+    const cart = session.get('cart', {})
+    const productIds = Object.keys(cart)
+
+    if (productIds.length === 0) {
+      return response.redirect().toRoute('products.index')
+    }
+
+    const products = await Product.findMany(productIds)
+
+    // 1. Validar Estoque de TODOS os itens antes de processar
+    for (const product of products) {
+      const cartQty = cart[product.id]
+      if (product.quantity < cartQty) {
+        session.flash({ error: `Estoque insuficiente para o produto "${product.name}".` })
+        return response.redirect().back()
+      }
+    }
+
+    // 2. Processar Pagamento (Simulado)
+    const paymentSuccess = true
+
+    if (paymentSuccess) {
+      let totalPaid = 0
+
+      // 3. Deduzir Estoque
+      for (const product of products) {
+        const cartQty = cart[product.id]
+        product.quantity = product.quantity - cartQty
+        await product.save()
+        totalPaid += product.price * cartQty
+      }
+
+      // 4. Preparar dados de envio
+      const shipping = {
+        cep: payload.cep,
+        street: payload.street,
+        houseNumber: payload.houseNumber,
+        complement: payload.complement || null,
+        reference: payload.reference || null,
+        cpf: payload.cpf,
+      }
+
+      // 5. Salvar pedido na sessão
+      session.put('lastOrder', {
+        success: true,
+        productId: null, // null indica compra de carrinho
+        productName: 'Compra do Carrinho',
+        quantity: Object.values(cart).reduce((a: any, b: any) => a + b, 0),
+        unitPrice: totalPaid, // Valor total
+        total: Number(totalPaid.toFixed(2)),
+        shipping,
+      })
+
+      // 6. Limpar carrinho
+      session.forget('cart')
+
+      return response.redirect().toRoute('checkout.result', { id: 'cart' })
+    }
+
+    session.put('lastOrder', { success: false, reason: 'Falha ao processar pagamento.' })
+    return response.redirect().toRoute('checkout.result', { id: 'cart' })
   }
 
   public async result({ params, view, session, response }: HttpContext) {

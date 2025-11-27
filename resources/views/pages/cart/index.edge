@@ -1,0 +1,84 @@
+@layout.app({ title: 'Meu Carrinho' })
+
+  @slot('main')
+    <div class="mx-auto max-w-7xl px-4 py-8">
+      <h1 class="text-3xl font-bold text-red-500 mb-8 uppercase tracking-wider">
+        Seu Equipamento (Carrinho)
+      </h1>
+
+      @if(items.length === 0)
+        <div class="text-center py-12 bg-gray-800 rounded-lg border border-gray-700">
+          <p class="text-gray-400 text-lg mb-6">Seu carrinho está vazio.</p>
+          <a href="{{ route('products.index') }}" class="btn-rock">
+            Ir para a Loja
+          </a>
+        </div>
+      @else
+        <div class="bg-gray-800 rounded-lg shadow-lg border border-gray-700 overflow-hidden">
+          <div class="p-6 space-y-6">
+            @each(item in items)
+              <div class="flex flex-col sm:flex-row items-center justify-between border-b border-gray-700 pb-6 last:border-0 last:pb-0">
+                
+                {{-- Imagem e Nome --}}
+                <div class="flex items-center gap-4 w-full sm:w-1/2">
+                  @if(item.product.images && item.product.images.length > 0)
+                    <img src="{{ route('images.show', { name: item.product.images[0].name }) }}" 
+                         alt="{{ item.product.name }}" 
+                         class="w-20 h-20 object-cover rounded border border-gray-600">
+                  @else
+                    <div class="w-20 h-20 bg-gray-700 rounded flex items-center justify-center text-gray-500">
+                      <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    </div>
+                  @endif
+                  
+                  <div>
+                    <h3 class="text-lg font-semibold text-white">{{ item.product.name }}</h3>
+                    <p class="text-sm text-gray-400">Unitário: R$ {{ item.product.price.toFixed(2).replace('.', ',') }}</p>
+                  </div>
+                </div>
+
+                {{-- Quantidade e Subtotal --}}
+                <div class="flex items-center justify-between w-full sm:w-1/2 mt-4 sm:mt-0 gap-4">
+                  <div class="text-gray-300">
+                    Qtd: <span class="font-bold text-white">{{ item.quantity }}</span>
+                  </div>
+                  
+                  <div class="font-bold text-green-400 text-lg">
+                    R$ {{ item.subtotal.toFixed(2).replace('.', ',') }}
+                  </div>
+
+                  {{-- Botão Remover --}}
+                  @form({ action: route('cart.destroy', { id: item.product.id }, { qs: { _method: 'DELETE' } }) })
+                    <button type="submit" class="text-red-500 hover:text-red-400 hover:bg-gray-700 p-2 rounded transition-colors" title="Remover">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                      </svg>
+                    </button>
+                  @end
+                </div>
+              </div>
+            @end
+          </div>
+
+          {{-- Rodapé do Carrinho (Total e Checkout) --}}
+          <div class="bg-gray-900 px-6 py-8 border-t border-gray-700 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="text-xl">
+              <span class="text-gray-400">Total:</span>
+              <span class="font-bold text-3xl text-white ml-2">R$ {{ total.toFixed(2).replace('.', ',') }}</span>
+            </div>
+            
+            <div class="flex gap-4">
+              <a href="{{ route('products.index') }}" class="btn-secondary-rock">
+                Continuar Comprando
+              </a>
+              {{-- Aqui vamos apontar para a rota de checkout do carrinho futuramente --}}
+              <a href="{{ route('checkout.cart') }}" class="btn-rock px-8 py-3 text-lg shadow-lg hover:shadow-red-600/30">
+                Finalizar Compra
+              </a>
+            </div>
+          </div>
+        </div>
+      @endif
+    </div>
+  @end
+@end
