@@ -9,10 +9,13 @@ import Image from '#models/image'
 import fs from 'node:fs/promises'
 
 export default class ProductsController {
-  public async index({ view }: HttpContext) {
-    const products = await Product.query().preload('images')
+  public async index({ view, request }: HttpContext) {
+    const page = Number(request.input('page', 1)) || 1
+    const perPage = 12
 
-    return view.render('pages/products/index', { products })
+    const products = await Product.query().preload('images').paginate(page, perPage)
+
+    return view.render('pages/products/index', { products: products.toJSON() })
   }
 
   public async show({ params, view }: HttpContext) {

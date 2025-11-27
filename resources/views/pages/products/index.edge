@@ -1,6 +1,7 @@
 @layout.app({ title: 'Produtos' })
 
   @slot('main')
+    @let(productList = products.data ?? products)
     <div class="flex justify-between items-center mb-8">
       <h1 class="text-3xl font-bold tracking-tight text-white">
         Produtos Que Detonam!
@@ -13,11 +14,11 @@
       @endif
     </div>
 
-    @if(products.length === 0)
+    @if(productList.length === 0)
       <p class="text-center text-gray-400">Sem produtos na área... Cadastre algo brutal!</p>
     @else
       <div class="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
-        @each(product in products)
+        @each(product in productList)
           <div class="group relative overflow-hidden rounded-lg shadow-lg bg-gray-800 border border-gray-700 transition-shadow duration-300 hover:shadow-red-900/40">
             <a href="{{ route('products.show', { id: product.id }) }}">
               <div class="aspect-h-1 aspect-w-1 w-full overflow-hidden bg-gray-700 lg:aspect-none group-hover:opacity-80 transition-opacity h-64">
@@ -63,6 +64,31 @@
           </div>
         @end
       </div>
+      
+      @let(meta = products.meta ?? {})
+      @let(current = meta.current_page ?? meta.currentPage ?? meta.page ?? meta.current ?? 1)
+      @let(last = meta.last_page ?? meta.lastPage ?? meta.last ?? meta.lastPage ?? 1)
+      @let(baseUrl = route('products.index'))
+
+      @if(last > 1)
+        <div class="mt-8 flex justify-center">
+          <nav class="inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+            @if(current > 1)
+              <a href="{{ baseUrl }}?page={{ current - 1 }}" class="inline-flex items-center px-3 py-2 rounded-l-md bg-gray-700 text-white hover:bg-gray-600">Anterior</a>
+            @else
+              <span class="inline-flex items-center px-3 py-2 rounded-l-md bg-gray-800 text-gray-500">Anterior</span>
+            @endif
+
+            <span class="inline-flex items-center px-4 py-2 bg-gray-800 text-gray-200">{{ current }} / {{ last }}</span>
+
+            @if(current < last)
+              <a href="{{ baseUrl }}?page={{ current + 1 }}" class="inline-flex items-center px-3 py-2 rounded-r-md bg-gray-700 text-white hover:bg-gray-600">Próxima</a>
+            @else
+              <span class="inline-flex items-center px-3 py-2 rounded-r-md bg-gray-800 text-gray-500">Próxima</span>
+            @endif
+          </nav>
+        </div>
+      @endif
     @endif
   @end
 @end
