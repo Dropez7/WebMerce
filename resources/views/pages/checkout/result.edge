@@ -5,7 +5,7 @@
       @if(order.success)
         <h1 class="text-2xl font-bold text-green-400 mb-4">Pagamento realizado com sucesso!</h1>
 
-        {{-- Exibe imagem apenas se for um produto único (product existe) --}}
+        
         @if(product && (product.images?.[0]))
           <div class="mx-auto w-48 h-48 mb-4 overflow-hidden rounded shadow-lg">
             <img src="{{ route('images.show', { name: product.images[0].name }) }}" alt="{{ product.name }}" class="w-full h-full object-cover" />
@@ -14,7 +14,7 @@
 
         <p class="text-gray-300 mb-2">Você comprou <strong>{{ order.quantity }}</strong> item(s): <strong>{{ order.productName }}</strong>.</p>
         
-        {{-- Oculta valor unitário se for compra de carrinho, pois não faz sentido --}}
+        
         @if(order.productId)
           <p class="text-gray-300 mb-6">Valor unitário: <strong>R$ {{ Number(order.unitPrice).toFixed(2).replace('.', ',') }}</strong></p>
         @endif
@@ -34,7 +34,7 @@
         @endif
 
         <div class="mt-8 flex justify-center gap-4">
-          {{-- Só mostra o botão "Ver Produto" se for uma compra de item único --}}
+          
           @if(order.productId)
             <a href="{{ route('products.show', { id: order.productId }) }}" class="btn-secondary-rock">Ver produto</a>
           @endif
@@ -45,7 +45,7 @@
         <h1 class="text-2xl font-bold text-red-400 mb-4">Pagamento não realizado</h1>
         <p class="text-gray-300 mb-6">{{ order.reason || 'Ocorreu um erro ao processar o pagamento.' }}</p>
         
-        {{-- Redireciona para a rota correta dependendo do tipo de compra --}}
+       
         @if(order.productId)
           <a href="{{ route('checkout.show', { id: order.productId }) }}" class="btn-rock">Tentar novamente</a>
         @else

@@ -10,8 +10,7 @@
       @if(session.get('success'))
         <div class="mb-4 text-green-400">{{ session.get('success') }}</div>
       @endif
-
-      {{-- CORREÇÃO AQUI: Definimos a action dinamicamente em uma única tag --}}
+      
       @form({ 
         action: isCart ? route('checkout.cart_process') : route('checkout.process', { id: product.id }) 
       })
@@ -129,7 +128,7 @@
             </div>
           @endif
         </div>
-      @end {{-- Fecha o @form --}}
+      @end
 
       <script>
         (function () {

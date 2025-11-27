@@ -23,14 +23,12 @@ export default class PaymentsController {
       return response.redirect().back()
     }
 
-    // Simulate payment processing here. In a real app you would call a gateway.
     const paymentSuccess = true
 
     if (paymentSuccess) {
       product.quantity = product.quantity - quantity
       await product.save()
 
-      // include shipping info from payload when storing lastOrder
       const shipping = {
         cep: payload.cep,
         street: payload.street,
@@ -40,7 +38,6 @@ export default class PaymentsController {
         cpf: payload.cpf,
       }
 
-      // store order details in session to show on result page
       session.put('lastOrder', {
         success: true,
         productId: product.id,
@@ -58,7 +55,6 @@ export default class PaymentsController {
     return response.redirect().toRoute('checkout.result', { id: product.id })
   }
 
-  // Novo Método: Exibir Checkout do Carrinho
   public async checkoutCart({ view, session, response }: HttpContext) {
     const cart = session.get('cart', {})
     const productIds = Object.keys(cart)
@@ -85,7 +81,7 @@ export default class PaymentsController {
       name: `Carrinho (${totalQuantity} itens)`,
       price: total,
       description: 'Compra de múltiplos itens do carrinho.',
-      quantity: 1, // A quantidade no checkout será fixa em 1 (1 carrinho)
+      quantity: 1,
     }
 
     const currentYear = new Date().getFullYear()
@@ -93,12 +89,11 @@ export default class PaymentsController {
     return view.render('pages/checkout/index', {
       product: dummyProduct,
       currentYear,
-      isCart: true, // Flag para adaptar a view
-      formAction: router.makeUrl('checkout.cart_process'), // Ação do formulário
+      isCart: true,
+      formAction: router.makeUrl('checkout.cart_process'),
     })
   }
 
-  // Novo Método: Processar Pagamento do Carrinho
   public async processCart({ request, response, session }: HttpContext) {
     const payload = await request.validateUsing(paymentValidator)
     const cart = session.get('cart', {})
@@ -146,10 +141,10 @@ export default class PaymentsController {
       // 5. Salvar pedido na sessão
       session.put('lastOrder', {
         success: true,
-        productId: null, // null indica compra de carrinho
+        productId: null,
         productName: 'Compra do Carrinho',
         quantity: Object.values(cart).reduce((a: any, b: any) => a + b, 0),
-        unitPrice: totalPaid, // Valor total
+        unitPrice: totalPaid,
         total: Number(totalPaid.toFixed(2)),
         shipping,
       })
@@ -166,14 +161,11 @@ export default class PaymentsController {
 
   public async result({ params, view, session, response }: HttpContext) {
     const order = session.get('lastOrder')
-    // clear it so refresh won't show it again
     session.forget('lastOrder')
 
     if (!order) {
-      // If no order info, redirect back to product page
       return response.redirect().toRoute('products.show', { id: params.id })
     }
-    // load product (with images) to show thumbnail on result page
     let product = null
     if (order.productId) {
       product = await Product.find(order.productId)

@@ -59,8 +59,6 @@ router.get('/avatars/:filename', [ImagesController, 'showAvatar']).as('avatars.s
 
 router.group(() => {}).use(middleware.auth())
 
-// Adicione isto no start/routes.ts, fora do grupo 'admin'
-
 router
   .group(() => {
     // Carrinho de compras
@@ -71,8 +69,6 @@ router
     router.get('/checkout/cart', [PaymentsController, 'checkoutCart']).as('checkout.cart')
 
     router.post('/checkout/cart', [PaymentsController, 'processCart']).as('checkout.cart_process')
-
-    // Processamento de pagamentos individuais
     router.get('/checkout/:id', [PaymentsController, 'show']).as('checkout.show')
     router.post('/checkout/:id', [PaymentsController, 'process']).as('checkout.process')
     router.get('/checkout/:id/result', [PaymentsController, 'result']).as('checkout.result')

@@ -10,7 +10,6 @@ export default class CartController {
     // Buscar detalhes dos produtos que estão na sessão
     const products = await Product.query().whereIn('id', productIds).preload('images')
 
-    // Calcular totais e formatar dados para a view
     let total = 0
     const items = products.map((product) => {
       const quantity = cart[product.id]
@@ -31,7 +30,6 @@ export default class CartController {
     const { productId, quantity } = request.only(['productId', 'quantity'])
     const qty = Number(quantity || 1)
 
-    // Validar se o produto existe e tem estoque
     const product = await Product.find(productId)
     if (!product) {
       session.flash({ error: 'Produto não encontrado.' })
@@ -43,10 +41,8 @@ export default class CartController {
       return response.redirect().back()
     }
 
-    // Obter carrinho atual
     const cart = session.get('cart', {})
 
-    // Atualizar quantidade se já existir, ou criar novo
     if (cart[productId]) {
       cart[productId] += qty
     } else {
