@@ -66,16 +66,23 @@ export default class PaymentsController {
 
     const products = await Product.findMany(productIds)
 
-    // Calcular total
     let total = 0
     let totalQuantity = 0
-    products.forEach((p) => {
-      const qty = cart[p.id]
-      total += p.price * qty
-      totalQuantity += qty
+
+    const items = products.map((product) => {
+      const quantity = cart[product.id]
+      const subtotal = product.price * quantity
+
+      total += subtotal
+      totalQuantity += quantity
+
+      return {
+        product,
+        quantity,
+        subtotal,
+      }
     })
 
-    // Criar um "produto virtual" para reutilizar a view de checkout
     const dummyProduct = {
       id: 'cart',
       name: `Carrinho (${totalQuantity} itens)`,
@@ -88,6 +95,8 @@ export default class PaymentsController {
 
     return view.render('pages/checkout/index', {
       product: dummyProduct,
+      items,
+      total,
       currentYear,
       isCart: true,
       formAction: router.makeUrl('checkout.cart_process'),

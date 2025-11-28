@@ -22,6 +22,7 @@ router
   .where('id', router.matchers.number())
   .as('products.show')
 
+// Grupo admin
 router
   .group(() => {
     router.get('/products/create', [ProductsController, 'create']).as('products.create')
@@ -29,6 +30,7 @@ router
     router.post('/products', [ProductsController, 'store']).as('products.store')
     router.put('/products/:id', [ProductsController, 'update']).as('products.update')
     router.delete('/products/:id', [ProductsController, 'destroy']).as('products.destroy')
+    router.post('/products/:id/stock', [ProductsController, 'addStock']).as('products.addStock')
   })
   .use(middleware.auth())
   .use(middleware.admin())

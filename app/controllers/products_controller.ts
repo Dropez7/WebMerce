@@ -114,4 +114,21 @@ export default class ProductsController {
 
     return response.redirect().toRoute('products.index')
   }
+
+  public async addStock({ params, request, response, session }: HttpContext) {
+    const product = await Product.findOrFail(params.id)
+    const quantityToAdd = Number(request.input('quantity', 0))
+
+    if (quantityToAdd > 0) {
+      product.quantity += quantityToAdd
+      await product.save()
+      session.flash({
+        success: `Estoque de "${product.name}" aumentado em ${quantityToAdd} unidades!`,
+      })
+    } else {
+      session.flash({ error: 'Informe uma quantidade válida maior que zero.' })
+    }
+
+    return response.redirect().back()
+  }
 }

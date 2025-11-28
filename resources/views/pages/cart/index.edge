@@ -2,76 +2,100 @@
 
   @slot('main')
     <div class="mx-auto max-w-7xl px-4 py-8">
-      <h1 class="text-3xl font-bold text-red-500 mb-8 uppercase tracking-wider">
+      <h1 class="text-4xl font-bold text-red-500 mb-8 uppercase tracking-wider font-['New_Rocker'] drop-shadow-md border-b border-gray-700 pb-4">
         Seu Equipamento (Carrinho)
       </h1>
 
       @if(items.length === 0)
-        <div class="text-center py-12 bg-gray-800 rounded-lg border border-gray-700">
-          <p class="text-gray-400 text-lg mb-6">Seu carrinho está vazio.</p>
+        <div class="text-center py-20 bg-gray-800/50 rounded-lg border border-dashed border-gray-700">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-16 h-16 mx-auto text-gray-600 mb-4">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+          </svg>
+          <p class="text-gray-400 text-xl mb-6">O palco está vazio (Seu carrinho está vazio).</p>
           <a href="{{ route('products.index') }}" class="btn-rock">
             Ir para a Loja
           </a>
         </div>
       @else
-        <div class="bg-gray-800 rounded-lg shadow-lg border border-gray-700 overflow-hidden">
-          <div class="p-6 space-y-6">
+        <div class="bg-gray-800 rounded-xl shadow-2xl border border-gray-700 overflow-hidden">
+          
+          {{-- Lista de Itens --}}
+          <div class="divide-y divide-gray-700">
             @each(item in items)
-              <div class="flex flex-col sm:flex-row items-center justify-between border-b border-gray-700 pb-6 last:border-0 last:pb-0">
+              <div class="p-6 flex flex-col sm:flex-row items-center gap-6 hover:bg-gray-700/30 transition-colors duration-300">
                 
-                {{-- Imagem e Nome --}}
-                <div class="flex items-center gap-4 w-full sm:w-1/2">
-                  @if(item.product.images && item.product.images.length > 0)
-                    <img src="{{ route('images.show', { name: item.product.images[0].name }) }}" 
-                         alt="{{ item.product.name }}" 
-                         class="w-20 h-20 object-cover rounded border border-gray-600">
-                  @else
-                    <div class="w-20 h-20 bg-gray-700 rounded flex items-center justify-center text-gray-500">
-                      <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                    </div>
-                  @endif
-                  
-                  <div>
-                    <h3 class="text-lg font-semibold text-white">{{ item.product.name }}</h3>
-                    <p class="text-sm text-gray-400">Unitário: R$ {{ item.product.price.toFixed(2).replace('.', ',') }}</p>
-                  </div>
+                {{-- Imagem do Produto --}}
+                <div class="shrink-0">
+                  <a href="{{ route('products.show', { id: item.product.id }) }}" class="block group">
+                    @if(item.product.images && item.product.images.length > 0)
+                      <img src="{{ route('images.show', { name: item.product.images[0].name }) }}" 
+                           alt="{{ item.product.name }}" 
+                           class="w-24 h-24 object-cover rounded-md border border-gray-600 shadow-md group-hover:scale-105 transition-transform duration-300">
+                    @else
+                      <div class="w-24 h-24 bg-gray-700 rounded-md flex items-center justify-center text-gray-500 border border-gray-600">
+                        <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                      </div>
+                    @endif
+                  </a>
+                </div>
+                
+                {{-- Nome e Preço Unitário --}}
+                <div class="flex-1 text-center sm:text-left">
+                  <a href="{{ route('products.show', { id: item.product.id }) }}" class="group">
+                    <h3 class="text-xl font-bold text-white group-hover:text-red-500 transition-colors font-['New_Rocker'] tracking-wide">
+                      {{ item.product.name }}
+                    </h3>
+                  </a>
+                  <p class="text-sm text-gray-400 mt-1">Unitário: R$ {{ item.product.price.toFixed(2).replace('.', ',') }}</p>
                 </div>
 
-                {{-- Quantidade e Subtotal --}}
-                <div class="flex items-center justify-between w-full sm:w-1/2 mt-4 sm:mt-0 gap-4">
-                  <div class="text-gray-300">
-                    Qtd: <span class="font-bold text-white">{{ item.quantity }}</span>
+                {{-- Controles (Qtd, Subtotal, Delete) --}}
+                <div class="flex items-center justify-between gap-8 w-full sm:w-auto mt-4 sm:mt-0 bg-gray-900/50 p-3 rounded-lg sm:bg-transparent sm:p-0">
+                  
+                  {{-- Quantidade --}}
+                  <div class="flex flex-col items-center">
+                    <span class="text-xs text-gray-500 uppercase font-bold mb-1">Qtd</span>
+                    <span class="font-bold text-white text-lg bg-gray-700 px-3 py-0.5 rounded border border-gray-600">
+                      {{ item.quantity }}
+                    </span>
                   </div>
                   
-                  <div class="font-bold text-green-400 text-lg">
-                    R$ {{ item.subtotal.toFixed(2).replace('.', ',') }}
+                  {{-- Subtotal --}}
+                  <div class="flex flex-col items-end min-w-[100px]">
+                    <span class="text-xs text-gray-500 uppercase font-bold mb-1">Subtotal</span>
+                    <span class="font-bold text-green-400 text-lg">
+                      R$ {{ item.subtotal.toFixed(2).replace('.', ',') }}
+                    </span>
                   </div>
 
                   {{-- Botão Remover --}}
                   @form({ action: route('cart.destroy', { id: item.product.id }, { qs: { _method: 'DELETE' } }) })
-                    <button type="submit" class="text-red-500 hover:text-red-400 hover:bg-gray-700 p-2 rounded transition-colors" title="Remover">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <button type="submit" class="text-gray-500 hover:text-red-500 hover:bg-red-500/10 p-2 rounded-full transition-all duration-300" title="Remover do carrinho">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                       </svg>
                     </button>
                   @end
                 </div>
+
               </div>
             @end
           </div>
 
-          {{-- Rodapé do Carrinho (Total e Checkout) --}}
-          <div class="bg-gray-900 px-6 py-8 border-t border-gray-700 flex flex-col sm:flex-row justify-between items-center gap-4">
-            <div class="text-xl">
-              <span class="text-gray-400">Total:</span>
-              <span class="font-bold text-3xl text-white ml-2">R$ {{ total.toFixed(2).replace('.', ',') }}</span>
+          {{-- Rodapé do Carrinho --}}
+          <div class="bg-gray-900/90 px-8 py-8 border-t border-gray-700 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="flex flex-col items-center md:items-start">
+              <span class="text-gray-400 text-sm uppercase tracking-widest mb-1">Valor Total</span>
+              <span class="font-bold text-4xl text-white font-['New_Rocker'] tracking-wider text-shadow-sm">
+                R$ {{ total.toFixed(2).replace('.', ',') }}
+              </span>
             </div>
             
-            <div class="flex gap-4">
-              <a href="{{ route('products.index') }}" class="btn-secondary-rock">
+            <div class="flex gap-4 w-full md:w-auto">
+              <a href="{{ route('products.index') }}" class="btn-secondary-rock flex-1 md:flex-none text-center justify-center">
                 Continuar Comprando
               </a>
-              <a href="{{ route('checkout.cart') }}" class="btn-rock px-8 py-3 text-lg shadow-lg hover:shadow-red-600/30">
+              <a href="{{ route('checkout.cart') }}" class="btn-rock px-8 py-3 text-lg shadow-lg hover:shadow-red-600/30 flex-1 md:flex-none text-center justify-center">
                 Finalizar Compra
               </a>
             </div>
