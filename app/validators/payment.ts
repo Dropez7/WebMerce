@@ -4,7 +4,8 @@ const currentYear = new Date().getFullYear()
 
 export const paymentValidator = vine.compile(
   vine.object({
-    holderName: vine.string().trim().minLength(2),
+    holderName: vine.string().trim().optional(),
+    fullName: vine.string().trim().minLength(2),
   cardNumber: vine.string().trim().minLength(13).maxLength(19),
     expiryMonth: vine.number().min(1).max(12),
     expiryYear: vine.number().min(currentYear),

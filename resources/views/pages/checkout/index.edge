@@ -19,14 +19,20 @@
           <h2 class="text-lg font-semibold text-gray-200">Endereço de entrega</h2>
 
           <div>
+            <label class="text-sm text-gray-300">Nome completo</label>
+            @!input({ type: 'text', name: 'fullName', required: true, value: old('fullName', initial?.fullName ?? ''), class: 'w-full mt-1 p-2 rounded bg-gray-700 text-white' })
+            @!component('components/layout/partials/input_error', { field: 'fullName' })
+          </div>
+
+          <div>
             <label class="text-sm text-gray-300">CEP</label>
-            @!input({ type: 'text', name: 'cep', required: true, value: old('cep', ''), class: 'w-full mt-1 p-2 rounded bg-gray-700 text-white' })
+            @!input({ type: 'text', name: 'cep', required: true, value: old('cep', initial?.cep ?? ''), class: 'w-full mt-1 p-2 rounded bg-gray-700 text-white' })
             @!component('components/layout/partials/input_error', { field: 'cep' })
           </div>
 
           <div>
             <label class="text-sm text-gray-300">Rua</label>
-            @!input({ type: 'text', name: 'street', required: true, value: old('street', ''), class: 'w-full mt-1 p-2 rounded bg-gray-700 text-white' })
+            @!input({ type: 'text', name: 'street', required: true, value: old('street', initial?.street ?? ''), class: 'w-full mt-1 p-2 rounded bg-gray-700 text-white' })
             @!component('components/layout/partials/input_error', { field: 'street' })
           </div>
 
@@ -57,7 +63,7 @@
 
           <div>
             <label class="text-sm text-gray-300">Nome no cartão</label>
-            @!input({ type: 'text', name: 'holderName', required: true, value: old('holderName', ''), class: 'w-full mt-1 p-2 rounded bg-gray-700 text-white' })
+            @!input({ type: 'text', name: 'holderName', value: old('holderName', ''), class: 'w-full mt-1 p-2 rounded bg-gray-700 text-white' })
             @!component('components/layout/partials/input_error', { field: 'holderName' })
           </div>
 

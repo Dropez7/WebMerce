@@ -4,11 +4,18 @@ import { paymentValidator } from '#validators/payment'
 import router from '@adonisjs/core/services/router'
 
 export default class PaymentsController {
-  public async show({ params, view }: HttpContext) {
+  public async show({ params, view, auth }: HttpContext) {
     const product = await Product.findOrFail(params.id)
 
     const currentYear = new Date().getFullYear()
-    return view.render('pages/checkout/index', { product, currentYear })
+    const user = auth.user
+    const initial = {
+      cep: user?.postalCode || '',
+      street: user?.address || '',
+      fullName: user?.fullName || '',
+    }
+
+    return view.render('pages/checkout/index', { product, currentYear, initial })
   }
 
   public async process({ params, request, response, session }: HttpContext) {
@@ -55,7 +62,7 @@ export default class PaymentsController {
     return response.redirect().toRoute('checkout.result', { id: product.id })
   }
 
-  public async checkoutCart({ view, session, response }: HttpContext) {
+  public async checkoutCart({ view, session, response, auth }: HttpContext) {
     const cart = session.get('cart', {})
     const productIds = Object.keys(cart)
 
@@ -93,6 +100,13 @@ export default class PaymentsController {
 
     const currentYear = new Date().getFullYear()
 
+    const user = auth.user
+    const initial = {
+      cep: user?.postalCode || '',
+      street: user?.address || '',
+      fullName: user?.fullName || '',
+    }
+
     return view.render('pages/checkout/index', {
       product: dummyProduct,
       items,
@@ -100,6 +114,7 @@ export default class PaymentsController {
       currentYear,
       isCart: true,
       formAction: router.makeUrl('checkout.cart_process'),
+      initial,
     })
   }
 
