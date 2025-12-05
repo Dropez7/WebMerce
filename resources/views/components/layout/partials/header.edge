@@ -1,6 +1,19 @@
 <div class="relative z-30">
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
     <div class="flex items-center space-x-3">
+      <button
+        id="back-button"
+        type="button"
+        data-fallback="{{ route('home') }}"
+        aria-label="Voltar"
+        class="inline-flex items-center gap-2 text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-700 px-2 py-1 rounded transition-colors"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-5 h-5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+        </svg>
+        <span class="hidden sm:inline">Voltar</span>
+      </button>
+
       <a
         href="{{ route('home') }}"
         class="flex items-center space-x-3 text-lg font-semibold text-white hover:text-red-500 transition-colors"
@@ -97,4 +110,51 @@
       @endif
     </div>
   </div>
+
+    <script>
+      (function () {
+        try {
+          const btn = document.getElementById('back-button')
+          if (!btn) return
+
+          // Hide the back button when we're on the fallback (home) page
+          try {
+            const fallback = btn.getAttribute('data-fallback') || '/'
+            try {
+              const fbPath = new URL(fallback, location.origin).pathname.replace(/\/+$/,'') || '/'
+              const curPath = location.pathname.replace(/\/+$/,'') || '/'
+              if (fbPath === curPath) {
+                btn.style.display = 'none'
+              }
+            } catch (e) {
+              // ignore URL parsing errors
+            }
+          } catch (e) {
+            // ignore
+          }
+
+          btn.addEventListener('click', function () {
+            try {
+              const fallback = btn.getAttribute('data-fallback') || '/'
+              if (document.referrer) {
+                try {
+                  const ref = new URL(document.referrer)
+                  if (ref.origin === location.origin) {
+                    history.back()
+                    return
+                  }
+                } catch (e) {
+                  // ignore and fallback
+                }
+              }
+              location.href = fallback
+            } catch (e) {
+              location.href = btn.getAttribute('data-fallback') || '/'
+            }
+          })
+        } catch (e) {
+          // noop
+        }
+      })()
+    </script>
 </div>
