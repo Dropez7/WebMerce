@@ -2,6 +2,8 @@ import type { HttpContext } from '@adonisjs/core/http'
 import Product from '#models/product'
 import { paymentValidator } from '#validators/payment'
 import router from '@adonisjs/core/services/router'
+import mail from '@adonisjs/mail/services/main'
+import OrderConfirmation from '../mails/order_confirmation.js'
 
 export default class PaymentsController {
   public async show({ params, view, auth }: HttpContext) {
@@ -18,12 +20,14 @@ export default class PaymentsController {
     return view.render('pages/checkout/index', { product, currentYear, initial })
   }
 
-  public async process({ params, request, response, session }: HttpContext) {
+  public async process({ params, request, response, session, auth }: HttpContext) {
     const product = await Product.findOrFail(params.id)
 
     const payload = await request.validateUsing(paymentValidator)
 
     const quantity = Number(payload.quantity || 1)
+
+    const user = auth.user!
 
     if (product.quantity < quantity) {
       session.flash({ error: 'Não há itens suficientes em estoque para completar a compra.' })
@@ -35,6 +39,20 @@ export default class PaymentsController {
     if (paymentSuccess) {
       product.quantity = product.quantity - quantity
       await product.save()
+
+      const total = product.price * quantity
+
+      const fullAddress =
+        `${payload.street}, ${payload.houseNumber}` +
+        (payload.complement ? ` - ${payload.complement}` : '') +
+        ` - CEP: ${payload.cep}`
+
+      try {
+        await mail.send(new OrderConfirmation(user, [{ product, quantity }], total, fullAddress))
+        console.log('✅ Email de item único enviado!')
+      } catch (error) {
+        console.error('Falha ao enviar e-mail:', error)
+      }
 
       const shipping = {
         cep: payload.cep,
@@ -118,7 +136,7 @@ export default class PaymentsController {
     })
   }
 
-  public async processCart({ request, response, session }: HttpContext) {
+  public async processCart({ request, response, session, auth }: HttpContext) {
     const payload = await request.validateUsing(paymentValidator)
     const cart = session.get('cart', {})
     const productIds = Object.keys(cart)
@@ -143,16 +161,37 @@ export default class PaymentsController {
 
     if (paymentSuccess) {
       let totalPaid = 0
+      const user = auth.user!
 
-      // 3. Deduzir Estoque
+      const fullAddress =
+        `${payload.street}, ${payload.houseNumber}` +
+        (payload.complement ? ` - ${payload.complement}` : '') +
+        ` - CEP: ${payload.cep}`
+
+      // 1. Cria uma lista para guardar os itens comprados
+      const purchasedItems: { product: Product; quantity: number }[] = []
+
       for (const product of products) {
         const cartQty = cart[product.id]
+
         product.quantity = product.quantity - cartQty
         await product.save()
+
         totalPaid += product.price * cartQty
+
+        // Adiciona na lista (NÃO envia email aqui dentro)
+        purchasedItems.push({ product, quantity: cartQty })
       }
 
-      // 4. Preparar dados de envio
+      // 2. AGORA sim, envia UM ÚNICO email com a lista toda
+      try {
+        await mail.send(new OrderConfirmation(user, purchasedItems, totalPaid, fullAddress))
+        console.log(`✅ Email único enviado com ${purchasedItems.length} itens.`)
+      } catch (error) {
+        console.error(`❌ Erro ao enviar email:`, error)
+      }
+
+      // Resto da lógica (Shipping, Session, Redirect)...
       const shipping = {
         cep: payload.cep,
         street: payload.street,
@@ -162,7 +201,6 @@ export default class PaymentsController {
         cpf: payload.cpf,
       }
 
-      // 5. Salvar pedido na sessão
       session.put('lastOrder', {
         success: true,
         productId: null,
@@ -173,9 +211,7 @@ export default class PaymentsController {
         shipping,
       })
 
-      // 6. Limpar carrinho
       session.forget('cart')
-
       return response.redirect().toRoute('checkout.result', { id: 'cart' })
     }
 
