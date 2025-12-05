@@ -11,7 +11,7 @@ import fs from 'node:fs/promises'
 export default class ProductsController {
   public async index({ view, request }: HttpContext) {
     const page = Number(request.input('page', 1)) || 1
-    const perPage = 12
+    const perPage = 8
     const search = request.input('search', '')
 
     let query = Product.query().preload('images')

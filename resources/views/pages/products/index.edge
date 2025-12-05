@@ -86,12 +86,13 @@
       @let(last = meta.last_page ?? meta.lastPage ?? meta.last ?? meta.lastPage ?? 1)
       @let(baseUrl = route('products.index'))
       @let(queryString = search ? `?search=${encodeURIComponent(search)}` : '')
+      @let(pageSep = queryString ? '&' : '?')
 
       @if(last > 1)
         <div class="mt-8 flex justify-center">
           <nav class="inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
             @if(current > 1)
-              <a href="{{ baseUrl }}{{ queryString }}&page={{ current - 1 }}" class="inline-flex items-center px-3 py-2 rounded-l-md bg-gray-700 text-white hover:bg-gray-600">Anterior</a>
+              <a href="{{ baseUrl }}{{ queryString }}{{ pageSep }}page={{ current - 1 }}" class="inline-flex items-center px-3 py-2 rounded-l-md bg-gray-700 text-white hover:bg-gray-600">Anterior</a>
             @else
               <span class="inline-flex items-center px-3 py-2 rounded-l-md bg-gray-800 text-gray-500">Anterior</span>
             @endif
@@ -99,7 +100,7 @@
             <span class="inline-flex items-center px-4 py-2 bg-gray-800 text-gray-200">{{ current }} / {{ last }}</span>
 
             @if(current < last)
-              <a href="{{ baseUrl }}{{ queryString }}&page={{ current + 1 }}" class="inline-flex items-center px-3 py-2 rounded-r-md bg-gray-700 text-white hover:bg-gray-600">Próxima</a>
+              <a href="{{ baseUrl }}{{ queryString }}{{ pageSep }}page={{ current + 1 }}" class="inline-flex items-center px-3 py-2 rounded-r-md bg-gray-700 text-white hover:bg-gray-600">Próxima</a>
             @else
               <span class="inline-flex items-center px-3 py-2 rounded-r-md bg-gray-800 text-gray-500">Próxima</span>
             @endif
