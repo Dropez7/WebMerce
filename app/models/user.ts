@@ -65,7 +65,11 @@ export default class User extends compose(BaseModel, AuthFinder) {
   @beforeSave()
   static async hashPassword(user: any) {
     if (user.$dirty.password) {
-      // Usar o mesmo driver scrypt que o withAuthFinder usa
+      if (user.password && user.password.startsWith('$scrypt$')) {
+        return
+      }
+
+      // Caso contrário, gera o hash
       user.password = await hash.use('scrypt').make(user.password)
     }
   }
