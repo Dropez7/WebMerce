@@ -12,10 +12,17 @@ export default class ProductsController {
   public async index({ view, request }: HttpContext) {
     const page = Number(request.input('page', 1)) || 1
     const perPage = 12
+    const search = request.input('search', '')
 
-    const products = await Product.query().preload('images').paginate(page, perPage)
+    let query = Product.query().preload('images')
 
-    return view.render('pages/products/index', { products: products.toJSON() })
+    if (search) {
+      query = query.where('name', 'like', `%${search}%`)
+    }
+
+    const products = await query.paginate(page, perPage)
+
+    return view.render('pages/products/index', { products: products.toJSON(), search })
   }
 
   public async show({ params, view }: HttpContext) {
