@@ -6,6 +6,7 @@ const ImagesController = () => import('#controllers/images_controller')
 const ProfileController = () => import('#controllers/profiles_controller')
 const AuthController = () => import('#controllers/auth_controller')
 const PaymentsController = () => import('#controllers/payments_controller')
+const CartController = () => import('#controllers/cart_controller')
 
 router
   .get('/', async ({ view }) => {
@@ -21,6 +22,7 @@ router
   .where('id', router.matchers.number())
   .as('products.show')
 
+// Grupo admin
 router
   .group(() => {
     router.get('/products/create', [ProductsController, 'create']).as('products.create')
@@ -28,6 +30,7 @@ router
     router.post('/products', [ProductsController, 'store']).as('products.store')
     router.put('/products/:id', [ProductsController, 'update']).as('products.update')
     router.delete('/products/:id', [ProductsController, 'destroy']).as('products.destroy')
+    router.post('/products/:id/stock', [ProductsController, 'addStock']).as('products.addStock')
   })
   .use(middleware.auth())
   .use(middleware.admin())
@@ -56,8 +59,18 @@ router
 router.get('/images/:name', [ImagesController, 'show']).as('images.show')
 router.get('/avatars/:filename', [ImagesController, 'showAvatar']).as('avatars.show')
 
+router.group(() => {}).use(middleware.auth())
+
 router
   .group(() => {
+    // Carrinho de compras
+    router.get('/cart', [CartController, 'index']).as('cart.index')
+    router.post('/cart', [CartController, 'store']).as('cart.store')
+    router.delete('/cart/:id', [CartController, 'destroy']).as('cart.destroy')
+
+    router.get('/checkout/cart', [PaymentsController, 'checkoutCart']).as('checkout.cart')
+
+    router.post('/checkout/cart', [PaymentsController, 'processCart']).as('checkout.cart_process')
     router.get('/checkout/:id', [PaymentsController, 'show']).as('checkout.show')
     router.post('/checkout/:id', [PaymentsController, 'process']).as('checkout.process')
     router.get('/checkout/:id/result', [PaymentsController, 'result']).as('checkout.result')
