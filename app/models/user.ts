@@ -10,10 +10,8 @@ const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   passwordColumnName: 'password',
 })
 
-// Defina o tipo para o género para melhor type safety
 type Gender = 'male' | 'female' | 'other' | 'prefer_not_to_say'
 
-// Defina o tipo para roles de usuário
 type UserRole = 'admin' | 'user'
 
 export default class User extends compose(BaseModel, AuthFinder) {
@@ -69,7 +67,6 @@ export default class User extends compose(BaseModel, AuthFinder) {
         return
       }
 
-      // Caso contrário, gera o hash
       user.password = await hash.use('scrypt').make(user.password)
     }
   }

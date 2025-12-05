@@ -6,7 +6,6 @@ import User from '#models/user'
 export default class OrderConfirmation extends BaseMail {
   subject = 'Seu pedido foi confirmado! 🤘'
 
-  // Agora aceitamos uma lista de itens e o total geral
   constructor(
     private user: User,
     private items: { product: Product; quantity: number }[],
@@ -20,7 +19,6 @@ export default class OrderConfirmation extends BaseMail {
     this.message.to(this.user.email)
     this.message.from(env.get('FROM_EMAIL') || 'onboarding@resend.dev')
 
-    // Gera as linhas da tabela HTML para cada item
     const rows = this.items
       .map((item) => {
         const subtotal = (item.product.price * item.quantity).toFixed(2).replace('.', ',')

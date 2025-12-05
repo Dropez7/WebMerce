@@ -6,7 +6,6 @@ export default class extends BaseSchema {
 
   async up() {
     this.schema.alterTable(this.tableName, (table) => {
-      // Coluna para guardar o nome do ficheiro da imagem de perfil
       table.string('avatar_filename').nullable()
     })
   }

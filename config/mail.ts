@@ -14,10 +14,8 @@ const mailConfig = defineConfig({
       host: env.get('SMTP_HOST'),
       port: env.get('SMTP_PORT'),
 
-      // IMPORTANTE: secure: true é obrigatório para porta 465 (SSL)
       secure: true,
 
-      // O bloco auth precisa estar descomentado para o Resend aceitar
       auth: {
         type: 'login',
         user: env.get('SMTP_USERNAME'),

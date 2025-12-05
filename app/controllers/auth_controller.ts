@@ -39,7 +39,6 @@ export default class AuthController {
     try {
       user = await User.verifyCredentials(email, password)
     } catch (error) {
-      // ADICIONE ESTA LINHA:
       console.log('ERRO DE LOGIN:', error)
 
       session.flash({ error: 'Email ou senha inválidos.', email })

@@ -8,7 +8,14 @@
         aria-label="Voltar"
         class="inline-flex items-center gap-2 text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-700 px-2 py-1 rounded transition-colors"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-5 h-5">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          class="w-5 h-5"
+        >
           <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
         </svg>
         <span class="hidden sm:inline">Voltar</span>
@@ -18,11 +25,7 @@
         href="{{ route('home') }}"
         class="flex items-center space-x-3 text-lg font-semibold text-white hover:text-red-500 transition-colors"
       >
-        <img
-          src="/logo.png"
-          alt="Head bangers Logo"
-          class="h-20 w-20 object-contain"
-        />
+        <img src="/logo.png" alt="Head bangers Logo" class="h-20 w-20 object-contain" />
         <span class="hidden sm:inline logo-text">Head bangers</span>
       </a>
     </div>
@@ -70,18 +73,33 @@
             Produtos
           </a>
 
-          <a href="{{ route('cart.index') }}" class="relative text-gray-300 hover:text-red-500 transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+          <a
+            href="{{ route('cart.index') }}"
+            class="relative text-gray-300 hover:text-red-500 transition-colors"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="w-6 h-6"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"
+              />
             </svg>
             @if(cartItemCount > 0)
-              <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+              <span
+                class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center"
+              >
                 {{ cartItemCount }}
               </span>
             @endif
           </a>
 
-          {{-- Botão Sair - ajustar cor --}}
           @form({ action: route('logout'), method: 'POST', class: 'inline' })
             <button
               type="submit"
@@ -93,7 +111,7 @@
         </div>
       @else
         <div>
-          {{-- Links Entrar/Registar - ajustar cor --}}
+
           <a
             href="{{ route('login.show') }}"
             class="text-sm font-medium text-gray-300 hover:text-red-500 transition-colors"
@@ -111,50 +129,47 @@
     </div>
   </div>
 
-    <script>
-      (function () {
+  <script>
+    (function() {
+      try {
+        const btn = document.getElementById("back-button");
+        if (!btn) return;
         try {
-          const btn = document.getElementById('back-button')
-          if (!btn) return
-
-          // Hide the back button when we're on the fallback (home) page
+          const fallback = btn.getAttribute("data-fallback") || "/";
           try {
-            const fallback = btn.getAttribute('data-fallback') || '/'
-            try {
-              const fbPath = new URL(fallback, location.origin).pathname.replace(/\/+$/,'') || '/'
-              const curPath = location.pathname.replace(/\/+$/,'') || '/'
-              if (fbPath === curPath) {
-                btn.style.display = 'none'
-              }
-            } catch (e) {
-              // ignore URL parsing errors
+            const fbPath = new URL(fallback, location.origin).pathname.replace(/\/+$/, "") || "/";
+            const curPath = location.pathname.replace(/\/+$/, "") || "/";
+            if (fbPath === curPath) {
+              btn.style.display = "none";
             }
           } catch (e) {
-            // ignore
-          }
 
-          btn.addEventListener('click', function () {
-            try {
-              const fallback = btn.getAttribute('data-fallback') || '/'
-              if (document.referrer) {
-                try {
-                  const ref = new URL(document.referrer)
-                  if (ref.origin === location.origin) {
-                    history.back()
-                    return
-                  }
-                } catch (e) {
-                  // ignore and fallback
-                }
-              }
-              location.href = fallback
-            } catch (e) {
-              location.href = btn.getAttribute('data-fallback') || '/'
-            }
-          })
+          }
         } catch (e) {
-          // noop
+
         }
-      })()
-    </script>
+        btn.addEventListener("click", function() {
+          try {
+            const fallback = btn.getAttribute("data-fallback") || "/";
+            if (document.referrer) {
+              try {
+                const ref = new URL(document.referrer);
+                if (ref.origin === location.origin) {
+                  history.back();
+                  return;
+                }
+              } catch (e) {
+
+              }
+            }
+            location.href = fallback;
+          } catch (e) {
+            location.href = btn.getAttribute("data-fallback") || "/";
+          }
+        });
+      } catch (e) {
+
+      }
+    })();
+  </script>
 </div>

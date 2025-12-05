@@ -49,7 +49,7 @@ export default class PaymentsController {
 
       try {
         await mail.send(new OrderConfirmation(user, [{ product, quantity }], total, fullAddress))
-        console.log('✅ Email de item único enviado!')
+        console.log('Email de item único enviado!')
       } catch (error) {
         console.error('Falha ao enviar e-mail:', error)
       }
@@ -147,7 +147,6 @@ export default class PaymentsController {
 
     const products = await Product.findMany(productIds)
 
-    // 1. Validar Estoque de TODOS os itens antes de processar
     for (const product of products) {
       const cartQty = cart[product.id]
       if (product.quantity < cartQty) {
@@ -156,7 +155,6 @@ export default class PaymentsController {
       }
     }
 
-    // 2. Processar Pagamento (Simulado)
     const paymentSuccess = true
 
     if (paymentSuccess) {
@@ -179,19 +177,16 @@ export default class PaymentsController {
 
         totalPaid += product.price * cartQty
 
-        // Adiciona na lista (NÃO envia email aqui dentro)
         purchasedItems.push({ product, quantity: cartQty })
       }
 
-      // 2. AGORA sim, envia UM ÚNICO email com a lista toda
       try {
         await mail.send(new OrderConfirmation(user, purchasedItems, totalPaid, fullAddress))
-        console.log(`✅ Email único enviado com ${purchasedItems.length} itens.`)
+        console.log(`Email único enviado com ${purchasedItems.length} itens.`)
       } catch (error) {
-        console.error(`❌ Erro ao enviar email:`, error)
+        console.error(`Erro ao enviar email:`, error)
       }
 
-      // Resto da lógica (Shipping, Session, Redirect)...
       const shipping = {
         cep: payload.cep,
         street: payload.street,
