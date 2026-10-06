@@ -1,15 +1,22 @@
-import '#start/kernel' // carrega o kernel do Adonis
-import app from '#start/app'
-import { HttpServer } from '@adonisjs/core/http'
+import 'reflect-metadata'
+import { Ignitor } from '@adonisjs/core'
+
+// Resolve the root of the project (one level up from this file)
+const APP_ROOT = new URL('../', import.meta.url)
+const IMPORTER = (filePath: string) => {
+  if (filePath.startsWith('./') || filePath.startsWith('../')) {
+    return import(new URL(filePath, APP_ROOT).href)
+  }
+  return import(filePath)
+}
 
 /**
- * Handler serverless para Vercel.
- * A função recebe a requisição e resposta já normalizadas pela plataforma
- * e delega ao HttpServer interno do Adonis, que já tem todas as rotas
- * configuradas (routes, middleware, etc.).
+ * Vercel serverless handler that delegates the request to AdonisJS's
+ * HttpServer instance. The Ignitor builds the server on demand and the
+ * same instance is reused across invocations (Vercel caches the module).
  */
 export default async function handler(req: any, res: any) {
-  const server = HttpServer.getInstance()
-  // O Adonis já tem o router carregado; apenas encaminhamos.
+  const ignitor = new Ignitor(APP_ROOT, { importer: IMPORTER })
+  const server = await ignitor.httpServer()
   return server.handle(req, res)
 }

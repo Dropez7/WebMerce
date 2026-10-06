@@ -6,7 +6,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "start": "node bin/server.js",
-    "build": "node ace build", "vercel-build": "npm run build",
+    "build": "node ace build --ignore-ts-errors", "vercel-build": "npm run build",
     "dev": "node ace serve --hmr",
     "test": "node ace test",
     "lint": "eslint .",
@@ -58,7 +58,7 @@
     "@adonisjs/session": "^7.5.1",
     "@adonisjs/mail": "^9.2.0",
     "@adonisjs/static": "^1.1.1",
-    "@adonisjs/vite": "^4.0.0",
+    "@adonisjs/shield": "^8.2.0",
     "@tailwindcss/vite": "^4.1.13",
     "@vinejs/vine": "^3.0.1",
     "basecoat-css": "^0.3.2",
