@@ -1,25 +1,11 @@
-import 'reflect-metadata'
-import { Ignitor } from '@adonisjs/core'
+import Serverless from '@adonisjs/serverless'
 
-const APP_ROOT = new URL('../build/', import.meta.url)
-
-const IMPORTER = (filePath: string) => {
-  if (filePath.startsWith('./') || filePath.startsWith('../')) {
-    return import(new URL(filePath, APP_ROOT).href)
-  }
-  return import(filePath)
-}
-
-// Inicializa a aplicação uma única vez fora do handler
-const ignitor = new Ignitor(APP_ROOT, { importer: IMPORTER })
-const app = ignitor.createApp('web')
-
-await app.init()
-await app.boot()
-
-const server = await app.container.make('server')
-await server.boot()
-
+/**
+ * Vercel serverless handler that uses the official AdonisJS Serverless adapter.
+ * The adapter lazily boots the full Adonis application on the first invocation
+ * and re‑uses the same instance for subsequent calls.
+ */
 export default async function handler(req: any, res: any) {
+  const server = new Serverless()
   return server.handle(req, res)
 }
