@@ -1,11 +1,13 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import app from '@adonisjs/core/services/app'
 import { cuid } from '@adonisjs/core/helpers'
+import os from 'node:os'
 import { promises as fs } from 'node:fs'
+import path from 'node:path'
 import router from '@adonisjs/core/services/router'
 import { ProfileValidator } from '#validators/profile'
 
-const AVATARS_PATH = app.makePath('tmp/avatars')
+const AVATARS_PATH = path.join(os.tmpdir(), 'avatars')
 
 export default class ProfileController {
   async edit({ view, auth }: HttpContext) {
@@ -33,7 +35,7 @@ export default class ProfileController {
 
       // 2. Apaga o avatar antigo se existir, ignorando erros ENOENT
       if (payload.avatar.state === 'moved' && user.avatarFilename) {
-        const oldFilePath = app.makePath(AVATARS_PATH, user.avatarFilename)
+        const oldFilePath = path.join(AVATARS_PATH, user.avatarFilename)
         try {
           await fs.unlink(oldFilePath)
         } catch {

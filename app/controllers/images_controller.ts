@@ -1,7 +1,8 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import app from '@adonisjs/core/services/app'
-import fs from 'node:fs'
-import { createReadStream } from 'node:fs'
+import os from 'node:os'
+import path from 'node:path'
+import fs, { createReadStream } from 'node:fs'
 
 export default class ImagesController {
   public async show({ params, response }: HttpContext) {
@@ -47,7 +48,7 @@ export default class ImagesController {
 
   public async showAvatar({ params, response }: HttpContext) {
     const filename = params.filename
-    const avatarPath = app.makePath('tmp/avatars', filename)
+    const avatarPath = path.join(os.tmpdir(), 'avatars', filename)
 
     try {
       await fs.promises.access(avatarPath, fs.constants.R_OK)
