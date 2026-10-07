@@ -10,6 +10,17 @@ export default defineConfig({
       connection: {
         filename: env.get('SQLITE_DB_PATH', 'tmp/sqlite.db'),
       },
+      pool: {
+        afterCreate: (conn: any, cb: any) => {
+          const fs = require('fs')
+          const path = require('path')
+          const dir = path.dirname(conn.config.filename)
+          if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir, { recursive: true })
+          }
+          cb(null, conn)
+        },
+      },
     },
 
     pg: {

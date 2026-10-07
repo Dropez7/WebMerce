@@ -20,8 +20,8 @@ const app = ignitor.createApp('web')
 await app.init()
 await app.boot()
 
-// Importa as rotas mapeadas para dentro do build/
-await import('#start/routes')
+// Importa as rotas compiladas dentro de build/start/routes.js
+await import(new URL('start/routes.js', APP_ROOT).href)
 
 const server = await app.container.make('server')
 await server.boot()
