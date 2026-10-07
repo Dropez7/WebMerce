@@ -1,5 +1,5 @@
 import env from '#start/env'
-import { defineConfig } from '@adonisjs/lucid/database_manager'
+import { defineConfig } from '@adonisjs/lucid'
 
 export default defineConfig({
   connection: env.get('DB_CONNECTION', 'sqlite'),
@@ -21,7 +21,7 @@ export default defineConfig({
       client: 'mysql2',
       connection: {
         host: env.get('DB_HOST'),
-        port: env.get('DB_PORT'),
+        port: env.get('DB_PORT') ? Number(env.get('DB_PORT')) : undefined,
         user: env.get('DB_USER'),
         password: env.get('DB_PASSWORD'),
         database: env.get('DB_DATABASE'),
