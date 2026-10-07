@@ -26,6 +26,11 @@ export default defineConfig({
     pg: {
       client: 'pg',
       connection: env.get('DATABASE_URL'),
+      pool: {
+        min: 0,
+        max: 1,
+        idleTimeoutMillis: 1000,
+      },
     },
 
     mysql: {
