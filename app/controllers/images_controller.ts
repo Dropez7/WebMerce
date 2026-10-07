@@ -9,15 +9,19 @@ export default class ImagesController {
     const image = await Image.query().where('name', params.name).first()
 
     if (image) {
-      const publicImagePath = app.makePath('public', 'products', params.name)
-      const tmpImagePath = app.makePath('tmp/uploads', params.name)
-
       let imagePath: string | null = null
 
-      if (fs.existsSync(publicImagePath)) {
-        imagePath = publicImagePath
-      } else if (fs.existsSync(tmpImagePath)) {
-        imagePath = tmpImagePath
+      try {
+        const publicImagePath = app.publicPath('products', params.name)
+        const tmpImagePath = app.makePath('tmp/uploads', params.name)
+
+        if (fs.existsSync(publicImagePath)) {
+          imagePath = publicImagePath
+        } else if (fs.existsSync(tmpImagePath)) {
+          imagePath = tmpImagePath
+        }
+      } catch {
+        // Fallback silencioso caso haja restrição de sistema de arquivos na Vercel
       }
 
       if (imagePath) {
@@ -35,26 +39,42 @@ export default class ImagesController {
         return response.stream(createReadStream(imagePath))
       }
     }
-    return response.notFound('Imagem não encontrada')
+
+    // Se a imagem não for encontrada no FS, entrega um SVG placeholder amigável
+    const placeholder = `<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
+      <rect fill="#ddd" width="200" height="200"/>
+      <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#555" font-family="sans-serif" font-size="16">Imagem não encontrada</text>
+    </svg>`
+    response.type('image/svg+xml')
+    return response.send(placeholder)
   }
 
   public async showAvatar({ params, response }: HttpContext) {
     const filename = params.filename
     const avatarPath = app.makePath('tmp/avatars', filename)
 
-    await fs.promises.access(avatarPath, fs.constants.R_OK)
+    try {
+      await fs.promises.access(avatarPath, fs.constants.R_OK)
 
-    const ext = filename.split('.').pop()?.toLowerCase()
-    const mimeTypes: Record<string, string> = {
-      jpg: 'image/jpeg',
-      jpeg: 'image/jpeg',
-      png: 'image/png',
-      gif: 'image/gif',
-      webp: 'image/webp',
+      const ext = filename.split('.').pop()?.toLowerCase()
+      const mimeTypes: Record<string, string> = {
+        jpg: 'image/jpeg',
+        jpeg: 'image/jpeg',
+        png: 'image/png',
+        gif: 'image/gif',
+        webp: 'image/webp',
+      }
+      const contentType = mimeTypes[ext || ''] || 'image/jpeg'
+
+      response.type(contentType)
+      return response.stream(createReadStream(avatarPath))
+    } catch {
+      const placeholder = `<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
+        <rect fill="#ddd" width="200" height="200"/>
+        <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#555" font-family="sans-serif" font-size="16">Avatar não encontrado</text>
+      </svg>`
+      response.type('image/svg+xml')
+      return response.send(placeholder)
     }
-    const contentType = mimeTypes[ext || ''] || 'image/jpeg'
-
-    response.type(contentType)
-    return response.stream(createReadStream(avatarPath))
   }
 }

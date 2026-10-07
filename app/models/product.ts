@@ -11,7 +11,10 @@ export default class Product extends BaseModel {
   @column()
   declare name: string
 
-  @column()
+  // Converte NUMERIC (string) retornado pelo PostgreSQL para number no JS
+  @column({
+    consume: (value: any) => (value !== null && value !== undefined ? Number(value) : 0),
+  })
   declare price: number
 
   @column()
