@@ -1,20 +1,26 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import app from '@adonisjs/core/services/app'
 import { cuid } from '@adonisjs/core/helpers'
-import os from 'node:os'
 import { promises as fs } from 'node:fs'
 import path from 'node:path'
 import router from '@adonisjs/core/services/router'
 import { ProfileValidator } from '#validators/profile'
+import { createClient } from '@supabase/supabase-js'
 
-const AVATARS_PATH = path.join(os.tmpdir(), 'avatars')
+const supabase = createClient(
+  process.env.SUPABASE_URL!,
+  process.env.SUPABASE_ANON_KEY!
+)
 
 export default class ProfileController {
   async edit({ view, auth }: HttpContext) {
     const user = auth.getUserOrFail()
     const avatarUrl = user.avatarFilename
-      ? router.makeUrl('avatars.show', { filename: user.avatarFilename })
+      ? user.avatarFilename.startsWith('http')
+        ? user.avatarFilename
+        : router.makeUrl('avatars.show', { filename: user.avatarFilename })
       : null
+
     return view.render('pages/profile/edit', { user, avatarUrl })
   }
 
@@ -25,27 +31,46 @@ export default class ProfileController {
     if (payload.avatar) {
       const newFilename = `${cuid()}.${payload.avatar.extname}`
 
-      // 1. Garante que o diretório exista no container da Vercel
-      await fs.mkdir(AVATARS_PATH, { recursive: true })
-
-      await payload.avatar.move(AVATARS_PATH, {
+      // Move para a pasta /tmp local do container serverless
+      const tmpPath = path.join('/tmp', newFilename)
+      await payload.avatar.move('/tmp', {
         name: newFilename,
         overwrite: true,
       })
 
-      // 2. Apaga o avatar antigo se existir, ignorando erros ENOENT
-      if (payload.avatar.state === 'moved' && user.avatarFilename) {
-        const oldFilePath = path.join(AVATARS_PATH, user.avatarFilename)
-        try {
-          await fs.unlink(oldFilePath)
-        } catch {
-          // Ignora se o arquivo antigo não existir no disco
-        }
+      // Lê o buffer do arquivo
+      const buffer = await fs.readFile(tmpPath)
+
+      // Faz o upload direto para o Supabase Storage
+      const { error: uploadErr } = await supabase.storage
+        .from('avatars')
+        .upload(newFilename, buffer, {
+          contentType: payload.avatar.headers['content-type'] || 'image/jpeg',
+          upsert: true,
+        })
+
+      if (uploadErr) {
+        session.flash({
+          error: `Falha ao enviar avatar para Supabase: ${uploadErr.message}`,
+        })
+        return response.redirect().back()
       }
 
-      if (payload.avatar.state === 'moved') {
-        user.avatarFilename = newFilename
+      // Obtém a URL pública gerada pelo Supabase
+      const { data: publicData } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(newFilename)
+
+      // Limpa a foto antiga do bucket (se existir)
+      if (user.avatarFilename && !user.avatarFilename.startsWith('http')) {
+        await supabase.storage.from('avatars').remove([user.avatarFilename]).catch(() => {})
       }
+
+      // Salva a URL pública inteira no banco
+      user.avatarFilename = publicData.publicUrl
+
+      // Remove o arquivo temporário da pasta /tmp
+      await fs.unlink(tmpPath).catch(() => {})
     }
 
     user.merge({
@@ -59,7 +84,6 @@ export default class ProfileController {
     })
 
     await user.save()
-
     session.flash({ success: 'Perfil atualizado com sucesso!' })
     return response.redirect().back()
   }

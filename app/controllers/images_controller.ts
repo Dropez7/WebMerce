@@ -38,17 +38,24 @@ export default class ImagesController {
   }
 
   /** Servir avatar do perfil sem tocar no banco de dados */
-  public async showAvatar({ params, response }: HttpContext) {
+public async showAvatar({ params, response }: HttpContext) {
     const filename = params.filename
-    const avatarPath = path.join(os.tmpdir(), 'avatars', filename)
 
-    if (existsSync(avatarPath)) {
-      return response.download(avatarPath)
+    if (filename.startsWith('http')) {
+      return response.redirect(filename)
+    }
+
+    const supabaseUrl = process.env.SUPABASE_URL
+    if (supabaseUrl) {
+      const publicUrl = `${supabaseUrl}/storage/v1/object/public/avatars/${filename}`
+      return response.redirect(publicUrl)
     }
 
     const placeholder = `<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
       <rect fill="#ddd" width="200" height="200"/>
-      <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#555" font-family="sans-serif" font-size="16">Avatar não encontrado</text>
+      <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#555" font-family="sans-serif" font-size="16">
+        Avatar não encontrado
+      </text>
     </svg>`
 
     response.type('image/svg+xml')
