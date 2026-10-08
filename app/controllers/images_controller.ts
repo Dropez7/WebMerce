@@ -1,79 +1,57 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import app from '@adonisjs/core/services/app'
+import { existsSync } from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
-import fs, { createReadStream } from 'node:fs'
 
 export default class ImagesController {
+  /** Servir imagem de produto sem tocar no banco de dados */
   public async show({ params, response }: HttpContext) {
+    const filename = params.name
     let imagePath: string | null = null
 
     try {
-      const publicImagePath = app.publicPath('products', params.name)
-      const tmpImagePath = app.makePath('tmp/uploads', params.name)
+      const publicPath = app.publicPath('products', filename)
+      const tmpPath = app.makePath('tmp/uploads', filename)
 
-      if (fs.existsSync(publicImagePath)) {
-        imagePath = publicImagePath
-      } else if (fs.existsSync(tmpImagePath)) {
-        imagePath = tmpImagePath
+      if (existsSync(publicPath)) {
+        imagePath = publicPath
+      } else if (existsSync(tmpPath)) {
+        imagePath = tmpPath
       }
     } catch {
-      // Em ambientes serverless o acesso ao FS pode ser restrito
+      // Ignora erros de sistema de arquivos em ambiente serverless
     }
 
     if (imagePath) {
-      const ext = params.name.split('.').pop()?.toLowerCase()
-      const mimeTypes: Record<string, string> = {
-        jpg: 'image/jpeg',
-        jpeg: 'image/jpeg',
-        png: 'image/png',
-        gif: 'image/gif',
-        webp: 'image/webp',
-      }
-      const contentType = mimeTypes[ext || ''] || 'image/jpeg'
-
-      response.type(contentType)
-      return response.stream(createReadStream(imagePath))
+      return response.download(imagePath)
     }
 
+    // Placeholder SVG limpo caso a imagem não exista
     const placeholder = `<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
       <rect fill="#ddd" width="200" height="200"/>
-      <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#555" font-family="sans-serif" font-size="16">
-        Imagem não encontrada
-      </text>
+      <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#555" font-family="sans-serif" font-size="16">Imagem não encontrada</text>
     </svg>`
+
     response.type('image/svg+xml')
     return response.send(placeholder)
   }
 
+  /** Servir avatar do perfil sem tocar no banco de dados */
   public async showAvatar({ params, response }: HttpContext) {
     const filename = params.filename
     const avatarPath = path.join(os.tmpdir(), 'avatars', filename)
 
-    try {
-      await fs.promises.access(avatarPath, fs.constants.R_OK)
-
-      const ext = filename.split('.').pop()?.toLowerCase()
-      const mimeTypes: Record<string, string> = {
-        jpg: 'image/jpeg',
-        jpeg: 'image/jpeg',
-        png: 'image/png',
-        gif: 'image/gif',
-        webp: 'image/webp',
-      }
-      const contentType = mimeTypes[ext || ''] || 'image/jpeg'
-
-      response.type(contentType)
-      return response.stream(createReadStream(avatarPath))
-    } catch {
-      const placeholder = `<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
-        <rect fill="#ddd" width="200" height="200"/>
-        <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#555" font-family="sans-serif" font-size="16">
-          Avatar não encontrado
-        </text>
-      </svg>`
-      response.type('image/svg+xml')
-      return response.send(placeholder)
+    if (existsSync(avatarPath)) {
+      return response.download(avatarPath)
     }
+
+    const placeholder = `<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
+      <rect fill="#ddd" width="200" height="200"/>
+      <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#555" font-family="sans-serif" font-size="16">Avatar não encontrado</text>
+    </svg>`
+
+    response.type('image/svg+xml')
+    return response.send(placeholder)
   }
 }
