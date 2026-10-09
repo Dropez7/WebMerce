@@ -38,10 +38,16 @@
             class="flex items-center space-x-2 text-sm font-medium text-gray-300 hover:text-red-500 transition-colors"
           >
             @if(auth.user.avatarFilename)
-              <img src="{{ auth.user.avatarFilename.startsWith('http') ? auth.user.avatarFilename : route('avatars.show', { filename: auth.user.avatarFilename }) }}" alt="Avatar" class="w-8 h-8 rounded-full" />
+              @if(auth.user.avatarFilename.startsWith('http'))
+                <img src="{{ auth.user.avatarFilename }}" alt="Avatar" class="w-8 h-8 rounded-full object-cover border-2 border-gray-600" />
+              @else
+                <img src="{{ route('avatars.show', { filename: auth.user.avatarFilename }) }}" alt="Avatar" class="w-8 h-8 rounded-full object-cover border-2 border-gray-600" />
+              @endif
             @else
-              <div class="w-8 h-8 rounded-full bg-gray-600"></div>
-            @endifaude -r
+              <div class="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center text-xs text-white">
+                U
+              </div>
+            @endif
           </a>
 
           <a
@@ -89,7 +95,6 @@
         </div>
       @else
         <div>
-
           <a
             href="{{ route('login.show') }}"
             class="text-sm font-medium text-gray-300 hover:text-red-500 transition-colors"
@@ -120,12 +125,8 @@
             if (fbPath === curPath) {
               btn.style.display = "none";
             }
-          } catch (e) {
-
-          }
-        } catch (e) {
-
-        }
+          } catch (e) {}
+        } catch (e) {}
         btn.addEventListener("click", function() {
           try {
             const fallback = btn.getAttribute("data-fallback") || "/";
@@ -136,18 +137,14 @@
                   history.back();
                   return;
                 }
-              } catch (e) {
-
-              }
+              } catch (e) {}
             }
             location.href = fallback;
           } catch (e) {
             location.href = btn.getAttribute("data-fallback") || "/";
           }
         });
-      } catch (e) {
-
-      }
+      } catch (e) {}
     })();
   </script>
 </div>
