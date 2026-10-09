@@ -39,26 +39,26 @@ export default class ImagesController {
 
   /** Servir avatar do perfil sem tocar no banco de dados */
 public async showAvatar({ params, response }: HttpContext) {
-    const filename = params.filename
+  const filename = params.filename
 
-    if (filename.startsWith('http')) {
-      return response.redirect(filename)
-    }
-
-    const supabaseUrl = process.env.SUPABASE_URL
-    if (supabaseUrl) {
-      const publicUrl = `${supabaseUrl}/storage/v1/object/public/avatars/${filename}`
-      return response.redirect(publicUrl)
-    }
-
-    const placeholder = `<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
-      <rect fill="#ddd" width="200" height="200"/>
-      <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#555" font-family="sans-serif" font-size="16">
-        Avatar não encontrado
-      </text>
-    </svg>`
-
-    response.type('image/svg+xml')
-    return response.send(placeholder)
+  // Se já for uma URL completa HTTP/HTTPS, redireciona direto
+  if (filename.startsWith('http://') || filename.startsWith('https://')) {
+    return response.redirect(filename)
   }
+
+  // Se for apenas o nome do arquivo, gera a URL pública do Supabase
+  const supabaseUrl = process.env.SUPABASE_URL
+  if (supabaseUrl) {
+    const publicUrl = `${supabaseUrl}/storage/v1/object/public/avatars/${filename}`
+    return response.redirect(publicUrl)
+  }
+
+  const placeholder = `<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
+    <rect fill="#ddd" width="200" height="200"/>
+    <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#555" font-family="sans-serif" font-size="16">Avatar não encontrado</text>
+  </svg>`
+
+  response.type('image/svg+xml')
+  return response.send(placeholder)
+}
 }
