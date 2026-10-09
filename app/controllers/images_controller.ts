@@ -1,8 +1,6 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import app from '@adonisjs/core/services/app'
 import { existsSync } from 'node:fs'
-import os from 'node:os'
-import path from 'node:path'
 
 export default class ImagesController {
   /** Servir imagem de produto sem tocar no banco de dados */

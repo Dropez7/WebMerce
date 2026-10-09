@@ -22,7 +22,7 @@
         <div class="flex flex-col">
           <h1 class="text-4xl font-bold tracking-tight text-red-500 uppercase font-['New_Rocker'] drop-shadow-md">{{ product.name }}</h1>
           <div class="mt-4 flex items-end gap-4">
-            <p class="text-3xl tracking-tight text-gray-100 font-bold">R$ {{ product.price.toFixed(2).replace('.', ',') }}</p>
+            <p class="text-3xl tracking-tight text-gray-100 font-bold">R$ {{ Number(product.price).toFixed(2) }}</p>
             <div class="mb-1">
               <span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset {{ product.quantity > 0 ? 'bg-green-500/10 text-green-400 ring-green-500/20' : 'bg-red-500/10 text-red-400 ring-red-500/20' }}">
                 {{ product.quantity }} {{ product.quantity === 1 ? 'unidade' : 'unidades' }} em estoque
