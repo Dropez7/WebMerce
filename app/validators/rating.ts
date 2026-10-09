@@ -1,6 +1,8 @@
-import { schema, rules } from '@ioc:Adonis/Core/Validator'
+import vine from '@vinejs/vine'
 
-export const ratingValidator = schema.create({
-  score: schema.number([rules.required(), rules.range(1, 5)]),
-  comment: schema.string.optional()
-})
+export const ratingValidator = vine.compile(
+  vine.object({
+    score: vine.number().min(1).max(5),
+    comment: vine.string().optional(),
+  })
+)

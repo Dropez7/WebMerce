@@ -1,30 +1,21 @@
-import BaseSchema from '@ioc:Adonis/Lucid/Schema'
+import { BaseSchema } from '@adonisjs/lucid/schema'
 
-export default class Ratings extends BaseSchema {
+export default class extends BaseSchema {
   protected tableName = 'ratings'
 
-  public async up () {
+  async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id')
-      table
-        .integer('product_id')
-        .unsigned()
-        .references('id')
-        .inTable('products')
-        .onDelete('CASCADE')
-      table
-        .integer('user_id')
-        .unsigned()
-        .references('id')
-        .inTable('users')
-        .onDelete('CASCADE')
-      table.tinyint('score').unsigned().notNullable() // 1‑5
+      table.integer('product_id').unsigned().references('id').inTable('products').onDelete('CASCADE')
+      table.integer('user_id').unsigned().references('id').inTable('users').onDelete('CASCADE')
+      table.integer('score').notNullable()
       table.text('comment').nullable()
-      table.timestamp('created_at', { useTz: true }).defaultTo(this.now())
+      table.timestamp('created_at').notNullable()
+      table.timestamp('updated_at').nullable()
     })
   }
 
-  public async down () {
+  async down() {
     this.schema.dropTable(this.tableName)
   }
 }
