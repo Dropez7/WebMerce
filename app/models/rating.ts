@@ -1,4 +1,6 @@
-import { BaseModel, column, belongsTo, BelongsTo } from '@adonisjs/lucid/orm'
+import { DateTime } from 'luxon'
+import { BaseModel, column, belongsTo } from '@adonisjs/lucid/orm'
+import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 import Product from '#models/product'
 import User from '#models/user'
 
@@ -16,7 +18,13 @@ export default class Rating extends BaseModel {
   declare score: number
 
   @column()
-  declare comment?: string
+  declare comment: string | null
+
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime
 
   @belongsTo(() => Product)
   declare product: BelongsTo<typeof Product>
