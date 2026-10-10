@@ -53,7 +53,7 @@
                   {{ product.description }}
                 </p>
                 <p class="mt-2 text-lg font-bold text-gray-100">
-                  R$ {{ product.price.toFixed(2).replace('.', ',') }}
+                  R$ {{ Number(product.price).toFixed(2).replace('.', ',') }}
                 </p>
                 <p class="mt-1 text-sm {{ product.quantity > 0 ? 'text-green-400' : 'text-red-400' }}">
                   {{ product.quantity }} {{ product.quantity === 1 ? 'unidade' : 'unidades' }} em estoque
