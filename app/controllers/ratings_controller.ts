@@ -32,7 +32,7 @@ export default class RatingsController {
   /** GET /products/:id/ratings */
   public async index({ params }: HttpContext) {
     const product = await Product.findOrFail(params.id)
-    const ratings = await product.related('ratings').query()
+    const ratings = await product.related('ratings').query().preload('user')
     const avg =
       ratings.reduce((sum, r) => sum + r.score, 0) / (ratings.length || 1)
     return { ratings, average: Number(avg.toFixed(1)) }

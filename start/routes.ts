@@ -7,6 +7,7 @@ const ProfileController = () => import('#controllers/profiles_controller')
 const AuthController = () => import('#controllers/auth_controller')
 const PaymentsController = () => import('#controllers/payments_controller')
 const CartController = () => import('#controllers/cart_controller')
+const RatingsController = () => import('#controllers/ratings_controller')
 
 router
   .get('/', async ({ view }) => {
@@ -21,6 +22,15 @@ router
   .get('/products/:id', [ProductsController, 'show'])
   .where('id', router.matchers.number())
   .as('products.show')
+router
+  .get('/products/:id/ratings', [RatingsController, 'index'])
+  .where('id', router.matchers.number())
+  .as('products.ratings')
+router
+  .post('/products/:id/rate', [RatingsController, 'store'])
+  .where('id', router.matchers.number())
+  .as('products.rate')
+  .use(middleware.auth())
 
 // Grupo admin
 router

@@ -41,6 +41,34 @@
             <div class="prose prose-sm prose-invert text-gray-400"><p>{{ product.description }}</p></div>
           </div>
 
+          <!-- Customer ratings -->
+          <section class="mt-8 border-t border-gray-700 pt-6" aria-labelledby="ratings-heading">
+            <h2 id="ratings-heading" class="text-xl font-bold text-gray-100">Avaliações dos clientes</h2>
+            <ul id="rating-list" class="mt-4 space-y-4">
+              <li class="text-sm text-gray-400">Carregando avaliações...</li>
+            </ul>
+
+            @if(auth.user)
+              @form({ action: route('products.rate', { id: product.id }), class: 'mt-6 space-y-4' })
+                <div>
+                  <label for="score" class="block text-sm font-medium text-gray-300">Nota</label>
+                  <select id="score" name="score" required class="input-rock mt-1 w-full">
+                    <option value="5">5 - Excelente</option>
+                    <option value="4">4 - Muito bom</option>
+                    <option value="3">3 - Bom</option>
+                    <option value="2">2 - Regular</option>
+                    <option value="1">1 - Ruim</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="comment" class="block text-sm font-medium text-gray-300">Comentário</label>
+                  <textarea id="comment" name="comment" rows="3" class="input-rock mt-1 w-full" placeholder="Conte o que você achou do produto"></textarea>
+                </div>
+                <button type="submit" class="btn-rock">Enviar Avaliação</button>
+              @end
+            @endif
+          </section>
+
           <!-- Purchase area -->
           <div class="mt-10">
             @if(product.quantity > 0)
@@ -99,5 +127,58 @@
       </div>
     </div>
   </div>
+  <script>
+    async function loadRatings() {
+      const list = document.getElementById('rating-list')
+
+      try {
+        const response = await fetch("{{ route('products.ratings', { id: product.id }) }}")
+        if (!response.ok) {
+          throw new Error(`Falha ao carregar avaliações: ${response.status}`)
+        }
+
+        const data = await response.json()
+        document.getElementById('rating-average').textContent = Number(data.average || 0).toFixed(1)
+
+        if (!data.ratings.length) {
+          list.innerHTML = '<li class="text-sm text-gray-400">Ainda não há avaliações.</li>'
+          return
+        }
+
+        list.replaceChildren(...data.ratings.map((rating) => {
+          const item = document.createElement('li')
+          item.className = 'rounded-lg border border-gray-700 bg-gray-800/60 p-4'
+
+          const header = document.createElement('div')
+          header.className = 'flex items-center justify-between gap-4'
+
+          const stars = document.createElement('span')
+          stars.className = 'font-semibold text-yellow-400'
+          stars.textContent = `${'★'.repeat(rating.score)}${'☆'.repeat(5 - rating.score)}`
+
+          const author = document.createElement('span')
+          author.className = 'text-xs text-gray-500'
+          author.textContent = rating.user?.fullName || 'Cliente'
+
+          header.append(stars, author)
+          item.append(header)
+
+          if (rating.comment) {
+            const comment = document.createElement('p')
+            comment.className = 'mt-2 text-sm text-gray-300'
+            comment.textContent = rating.comment
+            item.append(comment)
+          }
+
+          return item
+        }))
+      } catch (error) {
+        list.innerHTML = '<li class="text-sm text-red-400">Não foi possível carregar as avaliações.</li>'
+        console.error(error)
+      }
+    }
+
+    loadRatings()
+  </script>
 @end
 @end
