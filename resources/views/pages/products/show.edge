@@ -52,14 +52,15 @@
             @if(auth.user)
               @form({ action: route('products.rate', { id: product.id }), class: 'mt-6 space-y-4' })
                 <div>
-                  <label for="score" class="block text-sm font-medium text-gray-300">Nota</label>
-                  <select id="score" name="score" required class="input-rock mt-1 w-full">
-                    <option value="5">5 - Excelente</option>
-                    <option value="4">4 - Muito bom</option>
-                    <option value="3">3 - Bom</option>
-                    <option value="2">2 - Regular</option>
-                    <option value="1">1 - Ruim</option>
-                  </select>
+                  <label class="block text-sm font-medium text-gray-300">Nota</label>
+                  <input type="hidden" name="score" id="score-input" value="5">
+                  <div id="star-picker" class="flex space-x-1 cursor-pointer">
+                    <span class="star text-gray-400" data-value="1">★</span>
+                    <span class="star text-gray-400" data-value="2">★</span>
+                    <span class="star text-gray-400" data-value="3">★</span>
+                    <span class="star text-gray-400" data-value="4">★</span>
+                    <span class="star text-gray-400" data-value="5">★</span>
+                  </div>
                 </div>
                 <div>
                   <label for="comment" class="block text-sm font-medium text-gray-300">Comentário</label>
@@ -139,8 +140,28 @@
         }
 
         const data = await response.json()
-        document.getElementById('rating-average').textContent = Number(data.average || 0).toFixed(1);
-          document.getElementById('rating-count').textContent = `(${data.ratings.length} avaliações)`;
+        const avg = Number(data.average || 0)
+    document.getElementById('rating-average').textContent = avg.toFixed(1)
+    document.getElementById('rating-count').textContent = `(${data.ratings.length} avaliações)`
+    const starsContainer = document.getElementById('rating-stars')
+    starsContainer.innerHTML = ''
+    const full = Math.floor(avg)
+    const half = avg - full >= 0.5
+    for (let i = 1; i <= 5; i++) {
+      const star = document.createElement('span')
+      if (i <= full) {
+        star.textContent = '★'
+        star.className = 'text-yellow-400'
+      } else if (i === full + 1 && half) {
+        star.textContent = '★'
+        star.className = 'text-yellow-400' // could use a half‑star icon later
+      } else {
+        star.textContent = '☆'
+        star.className = 'text-gray-500'
+      }
+      starsContainer.appendChild(star)
+    }
+
 
         if (!data.ratings.length) {
           list.innerHTML = '<li class="text-sm text-gray-400">Ainda não há avaliações.</li>'
@@ -181,6 +202,31 @@
     }
 
     loadRatings()
-  </script>
+  <script>
+  // Star picker (interactive rating input)
+  document.addEventListener('DOMContentLoaded', () => {
+    const picker = document.getElementById('star-picker')
+    const hidden = document.getElementById('score-input')
+    if (!picker) return
+    const stars = picker.querySelectorAll('.star')
+    const setRating = (value) => {
+      hidden.value = value
+      stars.forEach(st => {
+        const v = Number(st.dataset.value)
+        st.className = v <= value ? 'star text-yellow-400' : 'star text-gray-400'
+      })
+    }
+    // Hover effect
+    stars.forEach(st => {
+      const val = Number(st.dataset.value)
+      st.addEventListener('mouseover', () => setRating(val))
+      st.addEventListener('click', () => setRating(val))
+    })
+    // Reset to default (5) when mouse leaves the container
+    picker.addEventListener('mouseleave', () => setRating(5))
+    // Initialize default rating
+    setRating(5)
+  })
+</script>
 @end
 @end
