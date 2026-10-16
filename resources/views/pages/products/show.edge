@@ -52,14 +52,14 @@
             @if(auth.user)
               @form({ action: route('products.rate', { id: product.id }), class: 'mt-6 space-y-4' })
                 <div>
-                  <label class="block text-sm font-medium text-gray-300">Nota</label>
+                  <label class="block text-sm font-medium text-gray-300">Sua Nota</label>
                   <input type="hidden" name="score" id="score-input" value="5">
-                  <div id="star-picker" class="flex space-x-1 cursor-pointer">
-                    <span class="star text-gray-400" data-value="1">★</span>
-                    <span class="star text-gray-400" data-value="2">★</span>
-                    <span class="star text-gray-400" data-value="3">★</span>
-                    <span class="star text-gray-400" data-value="4">★</span>
-                    <span class="star text-gray-400" data-value="5">★</span>
+                  <div id="star-picker" class="flex space-x-2 mt-1 select-none">
+                    <button type="button" class="star text-2xl text-yellow-400 focus:outline-none transition-colors" data-value="1">★</button>
+                    <button type="button" class="star text-2xl text-yellow-400 focus:outline-none transition-colors" data-value="2">★</button>
+                    <button type="button" class="star text-2xl text-yellow-400 focus:outline-none transition-colors" data-value="3">★</button>
+                    <button type="button" class="star text-2xl text-yellow-400 focus:outline-none transition-colors" data-value="4">★</button>
+                    <button type="button" class="star text-2xl text-yellow-400 focus:outline-none transition-colors" data-value="5">★</button>
                   </div>
                 </div>
                 <div>
@@ -129,6 +129,7 @@
       </div>
     </div>
   </div>
+
   <script>
     async function loadRatings() {
       const list = document.getElementById('rating-list')
@@ -141,27 +142,28 @@
 
         const data = await response.json()
         const avg = Number(data.average || 0)
-    document.getElementById('rating-average').textContent = avg.toFixed(1)
-    document.getElementById('rating-count').textContent = `(${data.ratings.length} avaliações)`
-    const starsContainer = document.getElementById('rating-stars')
-    starsContainer.innerHTML = ''
-    const full = Math.floor(avg)
-    const half = avg - full >= 0.5
-    for (let i = 1; i <= 5; i++) {
-      const star = document.createElement('span')
-      if (i <= full) {
-        star.textContent = '★'
-        star.className = 'text-yellow-400'
-      } else if (i === full + 1 && half) {
-        star.textContent = '★'
-        star.className = 'text-yellow-400' // could use a half‑star icon later
-      } else {
-        star.textContent = '☆'
-        star.className = 'text-gray-500'
-      }
-      starsContainer.appendChild(star)
-    }
+        document.getElementById('rating-average').textContent = avg.toFixed(1)
+        document.getElementById('rating-count').textContent = `(${data.ratings.length} avaliações)`
 
+        const starsContainer = document.getElementById('rating-stars')
+        starsContainer.innerHTML = ''
+        const full = Math.floor(avg)
+        const half = avg - full >= 0.5
+
+        for (let i = 1; i <= 5; i++) {
+          const star = document.createElement('span')
+          if (i <= full) {
+            star.textContent = '★'
+            star.className = 'text-yellow-400'
+          } else if (i === full + 1 && half) {
+            star.textContent = '★'
+            star.className = 'text-yellow-400'
+          } else {
+            star.textContent = '☆'
+            star.className = 'text-gray-500'
+          }
+          starsContainer.appendChild(star)
+        }
 
         if (!data.ratings.length) {
           list.innerHTML = '<li class="text-sm text-gray-400">Ainda não há avaliações.</li>'
@@ -201,42 +203,51 @@
       }
     }
 
-    loadRatings()
-  <script>
-  // Star picker (interactive rating input)
-  document.addEventListener('DOMContentLoaded', () => {
-    const picker = document.getElementById('star-picker')
-    const hidden = document.getElementById('score-input')
-    if (!picker) return
-    const stars = picker.querySelectorAll('.star')
-    let currentRating = Number(hidden.value) || 5
+    function initStarPicker() {
+      const picker = document.getElementById('star-picker')
+      const hidden = document.getElementById('score-input')
+      if (!picker || !hidden) return
 
-    const paintStars = (value) => {
-      stars.forEach(st => {
-        const v = Number(st.dataset.value)
-        st.className = v <= value ? 'star text-yellow-400' : 'star text-gray-400'
+      const stars = picker.querySelectorAll('.star')
+      let selectedRating = Number(hidden.value) || 5
+
+      const paintStars = (val) => {
+        stars.forEach((st) => {
+          const v = Number(st.getAttribute('data-value'))
+          if (v <= val) {
+            st.classList.remove('text-gray-600', 'text-gray-500', 'text-gray-400')
+            st.classList.add('text-yellow-400')
+          } else {
+            st.classList.remove('text-yellow-400')
+            st.classList.add('text-gray-600')
+          }
+        })
+      }
+
+      stars.forEach((st) => {
+        const val = Number(st.getAttribute('data-value'))
+
+        st.addEventListener('mouseover', () => {
+          paintStars(val)
+        })
+
+        st.addEventListener('click', (e) => {
+          e.preventDefault()
+          selectedRating = val
+          hidden.value = val
+          paintStars(selectedRating)
+        })
       })
+
+      picker.addEventListener('mouseleave', () => {
+        paintStars(selectedRating)
+      })
+
+      paintStars(selectedRating)
     }
 
-    const setRating = (value, persist = false) => {
-      hidden.value = value
-      paintStars(value)
-      if (persist) currentRating = value
-    }
-
-    // Hover effect (temporary)
-    stars.forEach(st => {
-      const val = Number(st.dataset.value)
-      st.addEventListener('mouseover', () => setRating(val, false))
-      st.addEventListener('click', () => setRating(val, true))
-    })
-
-    // When mouse leaves the container, revert to the last persisted rating
-    picker.addEventListener('mouseleave', () => setRating(currentRating, false))
-
-    // Initialise with the default rating (persisted)
-    setRating(currentRating, true)
-  })
-</script>
+    loadRatings()
+    initStarPicker()
+  </script>
 @end
 @end
