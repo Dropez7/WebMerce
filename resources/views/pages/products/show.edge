@@ -209,23 +209,33 @@
     const hidden = document.getElementById('score-input')
     if (!picker) return
     const stars = picker.querySelectorAll('.star')
-    const setRating = (value) => {
-      hidden.value = value
+    let currentRating = Number(hidden.value) || 5
+
+    const paintStars = (value) => {
       stars.forEach(st => {
         const v = Number(st.dataset.value)
         st.className = v <= value ? 'star text-yellow-400' : 'star text-gray-400'
       })
     }
-    // Hover effect
+
+    const setRating = (value, persist = false) => {
+      hidden.value = value
+      paintStars(value)
+      if (persist) currentRating = value
+    }
+
+    // Hover effect (temporary)
     stars.forEach(st => {
       const val = Number(st.dataset.value)
-      st.addEventListener('mouseover', () => setRating(val))
-      st.addEventListener('click', () => setRating(val))
+      st.addEventListener('mouseover', () => setRating(val, false))
+      st.addEventListener('click', () => setRating(val, true))
     })
-    // Reset to default (5) when mouse leaves the container
-    picker.addEventListener('mouseleave', () => setRating(5))
-    // Initialize default rating
-    setRating(5)
+
+    // When mouse leaves the container, revert to the last persisted rating
+    picker.addEventListener('mouseleave', () => setRating(currentRating, false))
+
+    // Initialise with the default rating (persisted)
+    setRating(currentRating, true)
   })
 </script>
 @end
