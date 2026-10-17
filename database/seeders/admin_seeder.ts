@@ -1,39 +1,30 @@
 import { BaseSeeder } from '@adonisjs/lucid/seeders'
 import User from '#models/user'
 import hash from '@adonisjs/core/services/hash'
-import db from '@adonisjs/lucid/services/db'
-import env from '#start/env'
 
 export default class extends BaseSeeder {
-  async run() {
-    const adminEmail = env.get('ADMIN_EMAIL')
-    const adminPassword = env.get('ADMIN_PASSWORD')
+  async run () {
+    const adminEmail = 'admin@headbangers.com'
+    const adminFullName = 'Admin Headbanger'
+    const adminPasswordPlain = 'admin123'
 
-    if (!adminEmail || !adminPassword) {
+    // Busca usuário admin existente
+    const existing = await User.findBy('email', adminEmail)
+    if (existing) {
+      // Se já existir, garante que a role é admin e atualiza senha (opcional)
+      existing.role = 'admin'
+      existing.fullName = adminFullName
+      // Atualiza senha somente se quiser mudar; aqui deixamos como está
+      await existing.save()
       return
     }
 
-    const existingAdmin = await User.findBy('email', adminEmail)
-    if (existingAdmin) {
-      await existingAdmin.delete()
-    }
-
-    const hashedPassword = await hash.use('scrypt').make(adminPassword)
-
-    const now = new Date().toISOString().replace('T', ' ').substring(0, 19)
-    await db.table('users').insert({
-      full_name: 'Administrador Rock n Roll',
+    const hashed = await hash.use('scrypt').make(adminPasswordPlain)
+    await User.create({
+      fullName: adminFullName,
       email: adminEmail,
-      password: hashedPassword,
+      password: hashed,
       role: 'admin',
-      age: 30,
-      address: 'Backstage VIP',
-      postal_code: '00000-000',
-      nationality: 'Rock',
-      gender: 'other',
-      phone: '(00) 00000-0000',
-      created_at: now,
-      updated_at: now,
     })
   }
 }
